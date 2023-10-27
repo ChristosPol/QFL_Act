@@ -1,0 +1,36 @@
+# Step 1 Prepare
+  a) Grid_Alert
+    See levels and decide on pairs to trade (if limited funds)
+  b) Setup_Bets
+    Get minimum volumes and decimal points for price and volume levels
+  c) Setup_Trading_Table
+    Calculate entry levels and export trading table according to available funds
+  
+# Step 2 Send buy orders
+  a) Send_buy_orders
+    Load trading table and run once. Sends all limit orders to buy
+
+# Step 3 Initiate scheduler
+  a) QFL_Scheduler
+    Cron jobs to run 'Send_sell_orders' hourly. If a buy limit order is closed
+    it sends the limit order to sell.
+    
+# Step 4 Closing trades
+  a) Close_trades
+    Downloads trading history and updates trading tables by changing the flags.
+  b) Cancel_buy_orders
+    If prices have deviated a lot from entry points, cancel buy limit orders to
+    have available funds for a new run
+  c) Cancel_sell_orders
+    Open sell orders that have gone bad, cancel them to be able to sell them at
+    market
+  d) Close_at_market
+    Once open sell orders are cancelled, close sell orders at market possibly
+    at a loss.
+
+# Step 5 Overview of trading
+  a) current_status_check
+    Check progress of all open sell orders
+  b) EvaluateStrategy
+    Check how well strategy is performing
+    
