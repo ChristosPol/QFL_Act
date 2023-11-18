@@ -29,7 +29,7 @@ EUR_pairs   <- sort(all_pairs$pairs)
 # # Get only EUR related crypto pairs
 # EUR_pairs <- grep("USD", all_pairs, value = T)
 # # EUR_pairs <- grep(paste("EUR", "ETH", sep = "|"), all_pairs, value = T)
-# 
+
 # # Remove Forex pairs
 # to_remove <- grep(paste(c("EUR",
 #                           ".d",

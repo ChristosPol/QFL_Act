@@ -28,7 +28,7 @@ url = "https://api.kraken.com/0/private/ClosedOrders"
 ntrades <- nrow(orders[(STATUS_BUY %in%c("CANCELLED","CLOSED"))])+
   nrow(orders[STATUS_SELL %in% c("CLOSED", "CANCELLED")])
 ntrades <- ceiling(ntrades/1000)*1000
-ntrades <- 200
+ntrades <- 1000
 print(paste0("number of trades needed: ", ntrades))
 
 i <- 1
@@ -76,6 +76,7 @@ df <- df[, ..key]
 
 df <- rbind(df_hist, df[ids %in% df$ids[!df$ids %in% df_hist$ids],])
 
+save(df, file ="trades/trades.Rdata")
 
 df$opentm <- unlist(df$opentm)
 df$closetm <- unlist(df$closetm)

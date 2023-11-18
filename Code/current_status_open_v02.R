@@ -24,7 +24,7 @@ i <- 1
 trades_raw <- list()
 namen <- list()
 dfs <- list()
-while (offset <= 200) {
+while (offset <= 1000) {
   
   trades_raw[[i]] <- get_trade_history(url, key, secret, offset)
   trades_raw <- lapply(trades_raw[[i]]$result$closed, function(x){x$descr <- NULL;x})
@@ -96,5 +96,7 @@ pp <- ggplot(data = f, aes(x = PAIR, y = quote_res, fill = colour))+
   scale_fill_manual(values= c("red", "darkgreen"))
 View(f)
 print(pp)
+sum(f$target_sell)-sum(f$current_cost)
+
 f[, percent_from_buy := (current_cost-cost_BUY_clean)/cost_BUY_clean*100]
 f[, percent_from_target := (target_sell)/current_cost*100]

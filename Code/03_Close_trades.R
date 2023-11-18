@@ -28,7 +28,7 @@ url = "https://api.kraken.com/0/private/ClosedOrders"
 ntrades <- nrow(orders[(STATUS_BUY %in%c("CANCELLED","CLOSED"))])+
   nrow(orders[STATUS_SELL %in% c("CLOSED", "CANCELLED")])
 ntrades <- ceiling(ntrades/1000)*1000
-ntrades <- 200
+ntrades <- 1000
 
 print(paste0("number of trades needed: ", ntrades))
 i <- 1
@@ -66,7 +66,6 @@ df_hist <- df_hist[, .(ids)][, status := "closed"]
 closed <- rbind(df_hist, closed[ids %in% closed$ids[!closed$ids %in% df_hist$ids]])
 
 
-i <- 726
 for(i in 1:nrow(orders)){
   if(orders$STATUS_SELL[i] == "OPEN" & orders$ORDER_SELL_ID[i] %in% closed$ids){
     orders$STATUS_SELL[i] <- "CLOSED"
@@ -86,8 +85,8 @@ orders$MESSAGE <- as.character(orders$MESSAGE)
 setorder(orders, row_n)
 orders[, row_n := NULL]
 
-orders[VOL < MIN & STATUS_BUY == "CLOSED" & STATUS_SELL == "OPEN", MESSAGE := "Minimum vol changed, cannot close order"]
-orders[MESSAGE == "Minimum vol changed, cannot close order", STATUS_SELL := "FAILED"]
+# orders[VOL < MIN & STATUS_BUY == "CLOSED" & STATUS_SELL == "OPEN", MESSAGE := "Minimum vol changed, cannot close order"]
+# orders[MESSAGE == "Minimum vol changed, cannot close order", STATUS_SELL := "FAILED"]
 orders[, MIN := NULL]
 # A third script "Close up all trades" that checks the status_sell
 

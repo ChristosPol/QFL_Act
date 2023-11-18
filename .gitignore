@@ -4,7 +4,7 @@
 
 # Session Data files
 .RData
-
+*.Rdata
 # Trading table
 Data
 
@@ -47,3 +47,4 @@ vignettes/*.pdf
 /Alerts
 /trades/**.Rdata
 /Code/*.log
+/Code/Parameter_optim/Data

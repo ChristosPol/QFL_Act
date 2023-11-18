@@ -9,11 +9,11 @@ files.sources = list.files(path_source, full.names = T)
 sapply(files.sources, source)
 interval <- 60
 budget <- current_avail_funds()
-budget/80
+budget/40
 
 minimum <- T
 use_existing_price_levels <- F
-each_usd <- 10
+each_usd <- 5
 n_orders <- 8 
 grid <- c(0.025,0.05,0.075,0.1, 0.125, 0.15, 0.2, 0.25)
 csv_path <- paste0("Data/trading_table.csv")
@@ -70,10 +70,17 @@ all_pairs <- all_pairs[!PAIR %in% rem]
 # all_pairs <- all_pairs[PAIR %in% rand]
 
 # Select which pairs to trade
-trade <- c("ICPUSD", "GTCUSD", "EULUSD", "FARMUSD", "KARUSD",
-           "KP3RUSD","LCXUSD","MVUSD","OPUSD",
-           "POLISUSD","PONDUSD","RBCUSD","SYNUSD",
-           "DENTUSD")
+trade <- c("ACAUSD", "ACHUSD", "AGLDUSD", "AKTUSD",
+           "ALCXUSD","ALICEUSD","ALPHAUSD", "ANTUSD",
+           "APEUSD","API3USD","ARPAUSD", "AUDIOUSD",
+           "BANDUSD","C98USD","CELRUSD", "CFGUSD",
+           "CHRUSD","COMPUSD","CQTUSD", "DYDXUSD",
+           "ENSUSD","FARMUSD","FIDAUSD", "FTMUSD",
+           "FXSUSD","GALAUSD","IDEXUSD", "INTRUSD",
+           "JASMYUSD","KARUSD","KEEPUSD", "KEYUSD",
+           "LCXUSD","LPTUSD","MCUSD", "MNGOUSD",
+           "MULTIUSD","MXCUSD","OGNUSD", "OXTUSD","PHAUSD","QNTUSD","RENUSD", "RNDRUSD"
+           , "SGBUSD", "SHIBUSD", "STXUSD", "TRUUSD", "XMLNZUSD")
 
 all_pairs <- all_pairs[PAIR %in% trade]
 
@@ -189,7 +196,7 @@ cumul[, CUM_BET := cumsum(SUM_BET)]
 cumul <- cumul[CUM_BET < budget]
 trading_table <- trading_table[PAIR %in% cumul$PAIR]
 
-View(trading_table)
+
 trading_table$CUR <- NULL
 trading_table$PRICE <- NULL
 trading_table$DECIMALS <- NULL

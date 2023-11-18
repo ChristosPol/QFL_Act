@@ -120,10 +120,13 @@ trades_to_OHLC <- function(pair, interval, from_date, to_date, date_subset) {
   # Read it
   file <- paste0(paste(pair_data_results, pair, sep = "/"), ".csv.gz")
   frame <- fread(file)
-
-  colnames(frame) <- c("price", "volume", "epoch_time", "buy_sell", "market_limit",
-                        "last_id", "Date_POSIXct", "Time", "Date", "Hour")
-
+  
+  colnames(frame) <- c("price", "volume", "epoch_time", "buy_sell", "market_limit","misc",
+                       "trade_id", "last_id", "Date_POSIXct", "Time", "Date", "Hour")
+  
+  # [1] "price"         "volume"        "time"          "buy_sell"      "market_limit" 
+  # [6] "miscellaneous" "trade_id"      "last_time"     "Date_POSIXct"  "Time"         
+  # [11] "Date"          "Hour" 
   print("File loaded..")
   # Subset the time period
   if(date_subset) {
@@ -140,10 +143,10 @@ trades_to_OHLC <- function(pair, interval, from_date, to_date, date_subset) {
     candles[[i]] <- copied[, .(high = max(price), low = min(price), open = first(price),
                                close = last(price), volume = sum(volume)),
                            by = .(interval)]
-    candles[[i]]$full_date_time <- as.POSIXct(paste(candles[[i]]$Date,
+    candles[[i]]$date <- as.POSIXct(paste(candles[[i]]$Date,
                                                     candles[[i]]$interval),
                                               format="%Y-%m-%d %H:%M:%S")
-    setorder(candles[[i]], full_date_time)
+    setorder(candles[[i]], date)
     
     print(paste0("Reduced to ", intervals[i], " intervals.." ))
   }

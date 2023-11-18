@@ -190,16 +190,18 @@ hist_trades_pair <- function(sleep, hist_id, pair){
     if(is.null(dat$result[1])) next # error, skip
     if(nrow(as.data.frame(dat$result[1])) == 0) break # last batch empty
     temp <- cbind(data.frame(dat$result[1]), dat$result$last)
+    colnames(temp) <- c("price", "volume", "time", "buy_sell", "market_limit", "miscellaneous", "trade_id","last_time")
     
     # Fix column names and types
-    temp$Date_POSIXct <- as.character(anytime(as.numeric(as.character(temp[,3]))))
+    temp$Date_POSIXct <- as.character(anytime(as.numeric(as.character(temp[,"time"]))))
     temp$Time <- strftime(temp$Date_POSIXct, format = "%H:%M:%S")
-    colnames(temp) <- c("price", "volume", "epoch_time", "buy_sell", "market_limit",
-                         "miscellaneous", "last_id", "Date_POSIXct", "Time")
-    temp$Date <- as.Date(temp$Time)
+    # colnames(temp) <- c("price", "volume", "epoch_time", "buy_sell", "market_limit",
+    #                      "miscellaneous", "last_id", "Date_POSIXct", "Time")
+    temp$Date <- as.Date(temp$Date_POSIXct)
     temp$Hour <- substr(temp$Time, 1,5)
-    temp$miscellaneous <- NULL
-    
+    # [1] "price"         "volume"        "time"          "buy_sell"      "market_limit" 
+    # [6] "miscellaneous" "trade_id"      "last_time"     "Date_POSIXct"  "Time"         
+    # [11] "Date"          "Hour" 
     hist_id <- dat$result$last
     file <- paste0(paste(pair_data_results, pair, sep = "/"), ".csv.gz")
     fwrite(temp, file, sep = ",", row.names = FALSE,

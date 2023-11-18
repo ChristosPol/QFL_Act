@@ -40,7 +40,7 @@ url = "https://api.kraken.com/0/private/ClosedOrders"
 # 
 i <- 1
 trades_raw <- list()
-while (offset <= 11000) {
+while (offset <= 15000) {
 
   trades_raw[[i]] <- get_trade_history(url, key, secret, offset)
 
@@ -176,20 +176,21 @@ orders_upd1_closed[, percent_result_clean := ((cost_SELL_clean - cost_BUY_clean)
 
 # Percent win or total risked
 all_trades <- copy(orders_upd1_closed[!is.na(quote_result_clean)])
-View(all_trades)
-nrow(all_trades)
-1516 trades
-191 days
-min(all_trades$closetm_SELL)-max(all_trades$closetm_SELL)
-1516/191 <- 7.93 trades daily on average
-table(all_trades$quote_result_clean > 0)/sum(table(all_trades$quote_result_clean > 0))*100
-1727/218
+# View(all_trades)
+# nrow(all_trades)
+# 1516 trades
+# 191 days
+# min(all_trades$closetm_SELL)-max(all_trades$closetm_SELL)
+# 1516/191 <- 7.93 trades daily on average
+# table(all_trades$quote_result_clean > 0)/sum(table(all_trades$quote_result_clean > 0))*100
+# 1727/218
 
 # orders_upd1_closed[, sum(cost_BUY_clean), by = PAIR]
 save(all_trades, file ="all_trades.rdata")
 setDT(all_trades)
 
 tt <- all_trades[, list(mean(percent_result_clean), .N), by = PAIR]
+
 tt[, bet := 50]
 tt[, clean:= N*bet*V1/100]
 setorder(tt, -N)
@@ -318,7 +319,7 @@ p1 <- ggplot(data=quote_equity, aes(x= closetm_SELL, y = cumul))+
   geom_point(colour = "darkgreen", size = 0.2,stroke = 1, shape =1)+
   dark_theme_gray()+ylab("Cumulative earnings in USD")+xlab("")+
   ggtitle("Cumulative equity in USD")+
-  scale_x_date(date_labels="%d-%m-%Y",date_breaks  ="7 day")+
+  scale_x_date(date_labels="%d-%m-%Y",date_breaks  ="30 day")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
   # theme(axis.text.x = element_blank())+
   theme(panel.grid.minor = element_blank())+
@@ -328,6 +329,65 @@ p1 <- ggplot(data=quote_equity, aes(x= closetm_SELL, y = cumul))+
 p1
 save(quote_equity, file="quote_equity.Rdata")
 
+rm(list=ls())
+load(file="quote_equity.Rdata")
+min(quote_equity$closetm_SELL)
+max(quote_equity$closetm_SELL)
+sd = as.Date("1990-01-01")
+ed = as.Date("1995-01-01")
+
+sd = min(quote_equity$closetm_SELL)
+ed = max(quote_equity$closetm_SELL)
+
+calendar <- data.table(calendar_time= seq(sd, ed, "days"), flag = 1)
+quote_equity <- merge(calendar, quote_equity, by.x = "calendar_time", by.y = "closetm_SELL", all.x = T)
+quote_equity$cumul <- na.locf(quote_equity$cumul)
+quote_equity[is.na(quote_result_clean), quote_result_clean := 0]
+quote_equity[is.na(quote_per_clean), quote_per_clean := 0]
+
+
+
+init <- 1150
+p1 <- ggplot(data=quote_equity, aes(x= calendar_time, y = cumul))+
+  geom_line(colour = "green", size =1)+
+  geom_point(colour = "darkgreen", size = 0.2,stroke = 1, shape =1)+
+  dark_theme_gray()+ylab("Cumulative earnings in USD")+xlab("")+
+  ggtitle("Cumulative equity in USD")+
+  scale_x_date(date_labels="%d-%m-%Y",date_breaks  ="30 day")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  # theme(axis.text.x = element_blank())+
+  theme(panel.grid.minor = element_blank())+
+  scale_y_continuous(breaks = round(seq(0, max(quote_equity$cumul)+10,  10)),
+                     sec.axis = sec_axis( trans=~./init*100, name="% Gain"))
+
+
+p1
+
+quote_equity[, nro:= 1:nrow(quote_equity)]
+
+
+plot(quote_equity$nro, quote_equity$cumul)
+fit <- lm(quote_equity$cumul~ quote_equity$nro)
+abline(fit)
+summary(fit)
+fut <- data.table(nro = 1:3000)
+diff(predict(fit, newdata=fut))
+
+quote_equity[, slope := 2.551419]
+quote_equity[, intercept := 53.39218]
+quote_equity[, fitt:=fitted(fit)]
+quote_equity[, cumul_percent := 1150+cumsum(quote_result_clean)]
+quote_equity[, precent := quote_result_clean/cumul_percent*100]
+
+
+
+plot(quote_equity$nro, quote_equity$quote_result_clean)
+fit <- lm(quote_equity$quote_result_clean~quote_equity$nro)
+abline(fit)
+
+
+plot(1:10000 ,1:10000*unique(quote_equity$slope)-unique(quote_equity$intercept), type = "l")
+points(quote_equity$nro, quote_equity$cumul, type = "l", col= "red")
 
 crypto_holdings <- orders_upd1[STATUS_BUY == "CLOSED" & STATUS_SELL != "CLOSED"]
 crypto_holdings[, vol_exec_BUY:= as.numeric(vol_exec_BUY)]
@@ -473,14 +533,19 @@ dfdf <- dfdf[, .(PAIR, Date_POSIXct,cum_diff_per)]
 # quote[, cumul := cumsum(quote_result_clean)]
 quote_equity[, PAIR := "CP"]
 quote_equity[,cum_diff_per := cumul/1150*100]
-setnames(quote_equity, c("closetm_SELL"), c("Date_POSIXct"))
+setnames(quote_equity, c("calendar_time"), c("Date_POSIXct"))
 quote_equity$cumul <- NULL
 quote_equity$quote_result_clean <- NULL
-df1 <- rbind(dfdf, quote_equity)
+
+df1 <- rbind(dfdf, quote_equity[, .(PAIR ,Date_POSIXct ,cum_diff_per)])
 df2 <- copy(df1)
 save(df2, file = "alpha.Rdata")
 # df2 <- df1[Date_POSIXct <= df1[PAIR == "CP", max(Date_POSIXct)]]
 # unique(df2$PAIR)[i]
+View(df2[PAIR %in% df2[cum_diff_per >70, unique(PAIR)]])
+ggplot(data=df2[PAIR %in% df2[cum_diff_per >70, unique(PAIR)]], aes(x = Date_POSIXct, y= cum_diff_per, colour = PAIR))+
+  geom_line()+theme(legend.position = "none")
+
 
 path_alerts <- "Alerts"
 pdf(paste0(path_alerts, "/Alpha_latest.pdf"), onefile = TRUE)
