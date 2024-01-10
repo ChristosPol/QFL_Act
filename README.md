@@ -19,4 +19,6 @@ The platform can trade all available USD pairs (>200) at the same time, and it c
 This strategy strongly depends on available funds to increase the possibility of entering trades. It could be possibly scaled up to 150000 USD.
 
 ## Example trades:
-![Alt text](/Images/1.png?raw=true)
+![Alt text](/Images/1.png?raw=true)|![Alt text](/Images/2.png?raw=true)
+![Alt text](/Images/3.png?raw=true)|![Alt text](/Images/4.png?raw=true)
+![Alt text](/Images/5.png?raw=true)
