@@ -40,7 +40,7 @@ url = "https://api.kraken.com/0/private/ClosedOrders"
 # 
 i <- 1
 trades_raw <- list()
-while (offset <= 15000) {
+while (offset <= 19000) {
 
   trades_raw[[i]] <- get_trade_history(url, key, secret, offset)
 
@@ -176,20 +176,27 @@ orders_upd1_closed[, percent_result_clean := ((cost_SELL_clean - cost_BUY_clean)
 
 # Percent win or total risked
 all_trades <- copy(orders_upd1_closed[!is.na(quote_result_clean)])
+
 # View(all_trades)
-# nrow(all_trades)
+min(all_trades$closetm_SELL)
+max(all_trades$closetm_SELL)
+nrow(all_trades)
 # 1516 trades
 # 191 days
-# min(all_trades$closetm_SELL)-max(all_trades$closetm_SELL)
+min(all_trades$closetm_SELL)-max(all_trades$closetm_SELL)
+
 # 1516/191 <- 7.93 trades daily on average
 # table(all_trades$quote_result_clean > 0)/sum(table(all_trades$quote_result_clean > 0))*100
 # 1727/218
 
 # orders_upd1_closed[, sum(cost_BUY_clean), by = PAIR]
-save(all_trades, file ="all_trades.rdata")
+save(all_trades, file = "all_trades.rdata")
 setDT(all_trades)
-
+max(all_trades$percent_result_clean)
+min(all_trades$percent_result_clean)
 tt <- all_trades[, list(mean(percent_result_clean), .N), by = PAIR]
+View(all_trades)
+sum(all_trades$percent_result_clean)/2945
 
 tt[, bet := 50]
 tt[, clean:= N*bet*V1/100]
@@ -498,7 +505,7 @@ nrow(orders_upd1_closed)/as.numeric(days)#7.5 trades (buy sell)
 # p7 <- ggarrange(p4, p5, nrow= 2)
 # ggarrange(p6,p7, ncol = 2)
 # 
-
+library(stringr)
 url <- paste0("https://api.kraken.com/0/public/AssetPairs")
 tb <- jsonlite::fromJSON(url)
 all_pairs <- names(tb$result)
@@ -516,7 +523,7 @@ for (i in 1:length(all_pairs$PAIR)){
   df[, cum_diff_per := cum_diff/close[1]*100]
   df[, PAIR := all_pairs$PAIR[i]]
   mah_list[[i]]<- df
-  Sys.sleep(1)
+  Sys.sleep(0.5)
   print(i)
 }
 
@@ -539,6 +546,7 @@ quote_equity$quote_result_clean <- NULL
 
 df1 <- rbind(dfdf, quote_equity[, .(PAIR ,Date_POSIXct ,cum_diff_per)])
 df2 <- copy(df1)
+View(df2)
 save(df2, file = "alpha.Rdata")
 # df2 <- df1[Date_POSIXct <= df1[PAIR == "CP", max(Date_POSIXct)]]
 # unique(df2$PAIR)[i]

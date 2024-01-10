@@ -25,7 +25,7 @@ trades_raw <- list()
 namen <- list()
 dfs <- list()
 while (offset <= 1000) {
-  
+   
   trades_raw[[i]] <- get_trade_history(url, key, secret, offset)
   trades_raw <- lapply(trades_raw[[i]]$result$closed, function(x){x$descr <- NULL;x})
   namen[[i]] <- names(trades_raw)

@@ -115,6 +115,39 @@ win_ratio <- function(dataset){
   return(res)
 }
 
+candles <- function(data,date_interval = "2 week"){
+  # data[, date := as.Date(date)]
+  data[close>open, colour := "green"]
+  data[close<open, colour := "red"]
+  data[close==open, colour := "black"]
+  data[, colour:= as.factor(data$colour)]
+  
+  p <- ggplot(data = data)+
+    geom_segment(aes(x =interval,
+                     xend=interval,
+                     y =open,
+                     yend =close,
+                     colour= colour),
+                 size=1.5)+
+    geom_segment(aes(x = interval,
+                     xend=interval,
+                     y =high,
+                     yend =low,colour= colour))+
+    scale_color_manual(values=c("black","Forest Green","Red"))+
+    theme_bw()+
+    theme(legend.position ="none",
+          axis.title.y = element_blank(),
+          axis.title.x=element_blank(),
+          axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+          plot.title= element_text(hjust=0.5))
+  # +
+  # scale_x_datetime(labels = date_format("%H:%M:%S"))
+  # +
+  # scale_x_date(date_labels="%d-%m-%Y", date_breaks  =date_interval)
+  print(head(data))
+  return(p)
+}
+
 # Convert historical dates to candlesticks
 trades_to_OHLC <- function(pair, interval, from_date, to_date, date_subset) {
   # Read it
@@ -123,10 +156,7 @@ trades_to_OHLC <- function(pair, interval, from_date, to_date, date_subset) {
   
   colnames(frame) <- c("price", "volume", "epoch_time", "buy_sell", "market_limit","misc",
                        "trade_id", "last_id", "Date_POSIXct", "Time", "Date", "Hour")
-  
-  # [1] "price"         "volume"        "time"          "buy_sell"      "market_limit" 
-  # [6] "miscellaneous" "trade_id"      "last_time"     "Date_POSIXct"  "Time"         
-  # [11] "Date"          "Hour" 
+
   print("File loaded..")
   # Subset the time period
   if(date_subset) {
@@ -137,16 +167,12 @@ trades_to_OHLC <- function(pair, interval, from_date, to_date, date_subset) {
   for (i in 1:length(intervals)){
     # Select interval
     copied <- copy(frame)
-    copied[, interval := strftime(floor_date(as.POSIXct(Date_POSIXct), intervals[i]),
-                                  format = '%Y-%m-%d %H:%M:%S')]
+    copied[, interval := floor_date(as.POSIXct(Date_POSIXct), unit = intervals[i])]
 
     candles[[i]] <- copied[, .(high = max(price), low = min(price), open = first(price),
                                close = last(price), volume = sum(volume)),
                            by = .(interval)]
-    candles[[i]]$date <- as.POSIXct(paste(candles[[i]]$Date,
-                                                    candles[[i]]$interval),
-                                              format="%Y-%m-%d %H:%M:%S")
-    setorder(candles[[i]], date)
+    setorder(candles[[i]], interval)
     
     print(paste0("Reduced to ", intervals[i], " intervals.." ))
   }

@@ -9,7 +9,7 @@ files.sources = list.files(path_source, full.names = T)
 sapply(files.sources, source)
 interval <- 60
 budget <- current_avail_funds()
-budget/40
+round(budget/40)
 
 minimum <- T
 use_existing_price_levels <- F
@@ -26,6 +26,11 @@ tb <- jsonlite::fromJSON(url)
 all_pairs <- names(tb$result)
 all_pairs <- data.table(PAIR = all_pairs, CUR=str_sub(all_pairs,start = -3))
 all_pairs <- all_pairs[CUR%in%c("USD")]
+
+out <- c("AUDUSD", "DAIUSD", "ETHPYUSD", "ETHWUSD", "EURTUSD",
+        "PAXGUSD", "PYTHUSD", "PYUSDUSD", "TBTCUSD", "TUSDUSD", "USDCUSD", "USDTZUSD",
+        "USTUSD", "WBTCUSD", "XBTPYUSD", "ZEURZUSD", "ZGBPZUSD")
+all_pairs <- all_pairs[!PAIR %in% out]
 
 # Get last price
 url <- paste0("https://api.kraken.com/0/public/Ticker")
@@ -62,7 +67,7 @@ rem <- c("AUDUSD",
          "EURTUSD",
          "LUNA2USD",
          "PAXGUSD",
-         "TRIBE", "ZEURZUSD", "ZGBPZUSD")
+         "TRIBE", "ZEURZUSD", "ZGBPZUSD", "ETHPYUSD")
 all_pairs <- all_pairs[!PAIR %in% rem]
 
 
@@ -70,18 +75,8 @@ all_pairs <- all_pairs[!PAIR %in% rem]
 # all_pairs <- all_pairs[PAIR %in% rand]
 
 # Select which pairs to trade
-trade <- c("ACAUSD", "ACHUSD", "AGLDUSD", "AKTUSD",
-           "ALCXUSD","ALICEUSD","ALPHAUSD", "ANTUSD",
-           "APEUSD","API3USD","ARPAUSD", "AUDIOUSD",
-           "BANDUSD","C98USD","CELRUSD", "CFGUSD",
-           "CHRUSD","COMPUSD","CQTUSD", "DYDXUSD",
-           "ENSUSD","FARMUSD","FIDAUSD", "FTMUSD",
-           "FXSUSD","GALAUSD","IDEXUSD", "INTRUSD",
-           "JASMYUSD","KARUSD","KEEPUSD", "KEYUSD",
-           "LCXUSD","LPTUSD","MCUSD", "MNGOUSD",
-           "MULTIUSD","MXCUSD","OGNUSD", "OXTUSD","PHAUSD","QNTUSD","RENUSD", "RNDRUSD"
-           , "SGBUSD", "SHIBUSD", "STXUSD", "TRUUSD", "XMLNZUSD")
-
+trade <- c("XETHZUSD", "TIAUSD", "SUPERUSD", "SNXUSD", "SCRTUSD", "RPLUSD", 
+           "QTUMUSD", "PHAUSD", "ORCAUSD", "OGNUSD", "MXCUSD", "MCUSD")
 all_pairs <- all_pairs[PAIR %in% trade]
 
 

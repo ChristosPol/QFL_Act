@@ -1,4 +1,4 @@
-pair <- "DENTUSD"
+pair <- "MNGOUSD"
 # pair <- "SHIBEUR"
 # Path to save results
 data_path <- "Code/Parameter_optim/Data"
@@ -14,10 +14,11 @@ intervals <- paste(ticks, units, sep = " ")
 
 df <- trades_to_OHLC(pair = pair,
                      interval = intervals,
-                     from_date = "2023-10-01",
-                     to_date = "2023-10-05",
+                     from_date = "2022-07-01",
+                     to_date = "2023-07-01",
                      date_subset = T)
 
+min(df[[1]]$date)
 
 
 df <- df[[1]]
@@ -91,7 +92,20 @@ unique(summarised)
 # 
 # 
 # SP[SP_per_booleans[[3]]]
-# 
-candles(data =df)+
-  geom_hline(yintercept = as.numeric(unique(summarised)))
+# df
 
+as.numeric(df$date[which(df$date == "2023-11-11 22:00:00")])
+candles(data =df)+
+  geom_hline(yintercept = as.numeric(unique(summarised)), alpha =0.2)
+# +
+#   geom_vline(xintercept = as.numeric(df$date[which(df$date == "2023-11-11 22:00:00")]))
+
+
+df_test <- trades_to_OHLC(pair = pair,
+                     interval = intervals,
+                     from_date = "2023-07-02",
+                     to_date = "2023-12-02",
+                     date_subset = T)
+df_test <- df_test[[1]]
+candles(data =df_test)+
+  geom_hline(yintercept = as.numeric(unique(summarised)), alpha =0.2, colour = "black")

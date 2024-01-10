@@ -322,7 +322,7 @@ print(p1)
 
 print(wins_overall)
 print(round(wins_overall$sum_earned/init*100,2))
-
+print(tail(quote_equity,6))
 # eq_per <- copy(orders_upd1_closed)
 # eq_per[, closetm_SELL := substr(closetm_SELL, 1, 10)]
 # eq_per[, closetm_SELL := as.Date(closetm_SELL)]
@@ -419,4 +419,14 @@ print(round(wins_overall$sum_earned/init*100,2))
 # View(crypto_holdings[, sum(vol_exec_BUY), by = PAIR])
 # # 
 # 
+tmp <- copy(orders_upd1_closed)
+tmp[, closetm_SELL := as.Date(substr(closetm_SELL, 1, 10))]
+tmp <- tmp[, sum(quote_result_clean), by = c("closetm_SELL", "PAIR")]
+setorder(tmp, -closetm_SELL, -V1)
+tmp[, daily_sum := sum(V1), by = closetm_SELL]
+View(tmp)
 
+pp<-ggplot(data = unique(tmp[, .(closetm_SELL, daily_sum)]), aes(x = closetm_SELL, y = daily_sum))+
+  geom_bar(stat = "identity", colour = "black")+
+  geom_hline(yintercept = unique(tmp[, .(closetm_SELL, daily_sum)])[, mean(daily_sum)], colour = "red")
+print(pp)

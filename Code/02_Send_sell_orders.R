@@ -15,6 +15,7 @@ csv_path <- paste0("/Users/christos.polysopoulos/Repositories/QFL_Act/Data/tradi
 orders <- read_csv(csv_path,col_types = cols())
 print("#2 Order file loaded")
 
+
 key = API_Key
 secret = API_Sign
 print("#3 API keys defined")
@@ -26,7 +27,7 @@ url = "https://api.kraken.com/0/private/ClosedOrders"
 print("#4 Getting order history from kraken")
 i <- 1
 trades_raw <- list()
-norder <- 10000
+norder <- 14000
 offset <- 0
 print(paste0("#5 Obtaining the last ", norder, " trades"))
 
@@ -63,7 +64,7 @@ closed <- closed[status =="closed"]
 print(paste0("#7 Closed order IDs defined"))
 
 print(paste0("#8 Sending sell orders if buy order closed"))
-i <- 2167
+i <- 4845
 
 for(i in 1:nrow(orders)){
   # print(i)
