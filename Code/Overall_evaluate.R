@@ -196,7 +196,7 @@ max(all_trades$percent_result_clean)
 min(all_trades$percent_result_clean)
 tt <- all_trades[, list(mean(percent_result_clean), .N), by = PAIR]
 View(all_trades)
-sum(all_trades$percent_result_clean)/2945
+sum(all_trades$percent_result_clean)/3449
 
 tt[, bet := 50]
 tt[, clean:= N*bet*V1/100]
@@ -320,20 +320,21 @@ quote_equity <- quote_equity[, .(quote_result_clean = sum(quote_result_clean),
 colnames(quote_equity)[2] <- "quote_result_clean"
 setorder(quote_equity,closetm_SELL)
 quote_equity[, cumul := cumsum(quote_result_clean)]
-View(quote_equity)
+
 p1 <- ggplot(data=quote_equity, aes(x= closetm_SELL, y = cumul))+
   geom_line(colour = "green", size =1)+
-  geom_point(colour = "darkgreen", size = 0.2,stroke = 1, shape =1)+
-  dark_theme_gray()+ylab("Cumulative earnings in USD")+xlab("")+
-  ggtitle("Cumulative equity in USD")+
+  # geom_point(colour = "darkgreen", size = 0.2,stroke = 1, shape =1)+
+  dark_theme_gray()+ylab("")+xlab("")+
+  ggtitle("Daily cumulative returns in USD")+
   scale_x_date(date_labels="%d-%m-%Y",date_breaks  ="30 day")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
   # theme(axis.text.x = element_blank())+
   theme(panel.grid.minor = element_blank())+
-  scale_y_continuous(breaks = round(seq(0, max(quote_equity$cumul)+10,  10)),
-                     sec.axis = sec_axis( trans=~./init*100, name="% Gain"))
+  scale_y_continuous(breaks = round(seq(0, max(quote_equity$cumul)+10,  50)),
+                     sec.axis = sec_axis( trans=~./init*100, name="% Gain",breaks = round(seq(0, 125,  10))))
 
 p1
+ggsave(filename = "dce.png")
 save(quote_equity, file="quote_equity.Rdata")
 
 rm(list=ls())
