@@ -1,7 +1,7 @@
-# Crude trading platform QFL_DCA
+# Trading platform QFL_DCA
 
 ## Centralised exchange
-Current strategy is running on Kraken. Kraken is a United States–based cryptocurrency exchange, founded in 2011. It was one of the first bitcoin exchanges to be listed on Bloomberg Terminal and is reportedly valued at US$10.8 billion, as of mid-summer 2022.
+Kraken is a United States–based cryptocurrency exchange, founded in 2011. It was one of the first bitcoin exchanges to be listed on Bloomberg Terminal and is reportedly valued at US$10.8 billion, as of mid-summer 2022.
 Kraken is hosting a REST API that is organised into publicly accessible endpoints (market data, exchange status, etc.), and private authenticated endpoints (trading, funding, user data) which require requests to be signed.
 
 ## Software
@@ -17,3 +17,6 @@ This strategy aims to take advantage of two different aspects of the cryptocurre
 coins and thin order books.
 The platform can trade all available USD pairs (>200) at the same time, and it can be extended to more quotes (BTC, ETH, USDT, CHF, EUR, etc).
 This strategy strongly depends on available funds to increase the possibility of entering trades. It could be possibly scaled up to 150000 USD.
+
+## Example trades:
+![Alt text](/Images/1.png?raw=true)
