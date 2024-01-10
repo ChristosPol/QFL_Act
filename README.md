@@ -28,9 +28,3 @@ This strategy strongly depends on available funds to increase the possibility of
 
 ## Performance
 ![Alt text](/Images/dce.png?raw=true)
-
-| Test Column    | Test Column |
-| -------- | ------- |
-| Example1 | $250    |
-| Example2 | $80     |
-| Example3 | $420    |
