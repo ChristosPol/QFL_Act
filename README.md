@@ -28,4 +28,22 @@ This strategy strongly depends on available funds to increase the possibility of
 
 ## Performance
 The first test live trading session started on Oct 13, 2022 and is running to this day. Process is active on a local machine, but the plan is to utilize a server environment in the future. Initial funds were 1150 USD which were used to trade minimum order volumes for all available USD pairs.
-![Alt text](/Images/dce.png?raw=true)
+
+Start|2022-10-13
+End|2024-01-15
+Initial funds available (USD)|1150
+Returns in USD|1451
+Returns in %|126.2
+N trades|3565
+Wins|3520
+Losses|45
+Win ratio|98.7
+Average win %|9.3
+Biggest win %|166.6
+Biggest loss %|-55.3
+Days trading|459
+Average n trades per day|7.8
+
+![Alt text](/Data/evaluation/dce.png?raw=true)
+
+![Alt text](/Data/evaluation/alpha.png?raw=true)
