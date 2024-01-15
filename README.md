@@ -44,6 +44,6 @@ The first test live trading session started on Oct 13, 2022 and is running to th
 |Days trading|459|
 |Average n trades per day|7.8|
 
-![Alt text](/Data/evaluation/dce.png?raw=true)
 
-![Alt text](/Data/evaluation/alpha.png?raw=true)
+![Alt text](/Images/dce.png?raw=true)
+![Alt text](/Images/alpha.png?raw=true)
