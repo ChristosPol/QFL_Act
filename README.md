@@ -29,6 +29,8 @@ This strategy strongly depends on available funds to increase the possibility of
 ## Performance
 The first test live trading session started on Oct 13, 2022 and is running to this day. Process is active on a local machine, but the plan is to utilize a server environment in the future. Initial funds were 1150 USD which were used to trade minimum order volumes for all available USD pairs.
 
+| Column      | Value |
+| ----------- | ----------- |
 |Start|2022-10-13|
 |End|2024-01-15|
 |Initial funds available (USD)|1150|
