@@ -15,7 +15,7 @@ sapply(files.sources, source)
 unix_time <- "manually"
 
 # Choose any pair to pull
-pair <- "JUNOUSD"
+pair <- "CHZUSD"
 # pair <- "SHIBEUR"
 # Path to save results
 data_path <- "Code/Parameter_optim/Data"
@@ -27,7 +27,7 @@ dir.create(paste(data_path, pair, sep ="/"), showWarnings = T)
 pair_data_results <- paste(data_path, pair, sep ="/")
 
 # Select initial id based on unix_time arg
-initial_id <- select_period(unix_time,  diff_time = 1460)
+initial_id <- select_period(unix_time,  diff_time = 365)
 
 # Pull historical trades since initial id from epoch time
 hist_trades_pair(sleep = 1, hist_id = initial_id, pair = pair)

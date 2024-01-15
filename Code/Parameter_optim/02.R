@@ -16,13 +16,13 @@ df <- trades_to_OHLC(pair = pair,
                      interval = intervals,
                      from_date = "2022-07-01",
                      to_date = "2023-07-01",
-                     date_subset = T)
+                     date_subset = F)
 
 min(df[[1]]$date)
 
 
 df <- df[[1]]
-
+setnames(df, "interval", "date")
 df$week <- isoweek(as.Date(df$date))
 df$weekday <- weekdays(as.Date(df$date))
 df$year <- year(as.Date(df$date))
@@ -95,6 +95,8 @@ unique(summarised)
 # df
 
 as.numeric(df$date[which(df$date == "2023-11-11 22:00:00")])
+setnames(df, "date", "inteval")
+
 candles(data =df)+
   geom_hline(yintercept = as.numeric(unique(summarised)), alpha =0.2)
 # +

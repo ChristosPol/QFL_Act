@@ -75,8 +75,16 @@ all_pairs <- all_pairs[!PAIR %in% rem]
 # all_pairs <- all_pairs[PAIR %in% rand]
 
 # Select which pairs to trade
-trade <- c("XETHZUSD", "TIAUSD", "SUPERUSD", "SNXUSD", "SCRTUSD", "RPLUSD", 
-           "QTUMUSD", "PHAUSD", "ORCAUSD", "OGNUSD", "MXCUSD", "MCUSD")
+trade <- c("1INCHUSD", "AAVEUSD", "ACHUSD", "ADXUSD", "ALGOUSD", "ANTUSD", 
+           "API3USD", "ARPAUSD", "ATLASUSD", "ATOMUSD", "BALUSD", "BATUSD", "BLZUSD", "BNTUSD", "BSXUSD",
+           "CELRUSD", "CFGUSD", 
+           "COTIUSD", "CSMUSD", "CVCUSD", "CVXUSD", "DOTUSD", "DYDXUSD",
+           "EGLDUSD", "ENJUSD", "FETUSD", "FISUSD", "FLOWUSD", 
+           "FLRUSD", "FXSUSD", "GMTUSD", "GRTUSD", "GTCUSD",
+           "HFTUSD", "KARUSD", "KINUSD", "LINKUSD", "MANAUSD", "MASKUSD", 
+           "MATICUSD", "MCUSD", "MULTIUSD", "MXCUSD", "OGNUSD",
+           "ORCAUSD", "POLSUSD", "RENUSD", "SNXUSD", "SUIUSD", "SUSHIUSD", 
+           "TUSD", "XXRPZUSD")
 all_pairs <- all_pairs[PAIR %in% trade]
 
 

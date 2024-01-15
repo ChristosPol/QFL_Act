@@ -1,8 +1,8 @@
 # Trading platform QFL_DCA
 
 ## Centralised exchange
-Kraken is a United States–based cryptocurrency exchange, founded in 2011. It was one of the first bitcoin exchanges to be listed on Bloomberg Terminal and is reportedly valued at US$10.8 billion, as of mid-summer 2022.
-Kraken is hosting a REST API that is organised into publicly accessible endpoints (market data, exchange status, etc.), and private authenticated endpoints (trading, funding, user data) which require requests to be signed.
+[Kraken](https://www.kraken.com) is a United States–based cryptocurrency exchange, founded in 2011. It was one of the first bitcoin exchanges to be listed on Bloomberg Terminal and is reportedly valued at US$10.8 billion, as of mid-summer 2022.
+Kraken is hosting a [REST API](https://docs.kraken.com/rest/) that is organised into publicly accessible endpoints (market data, exchange status, etc.), and private authenticated endpoints (trading, funding, user data) which require requests to be signed.
 
 ## Software
 The entirety of the trading platform is been set up in R. There are no available libraries/packages in R to manage Kraken API, so everything needed to be coded from scratch.
@@ -27,4 +27,5 @@ This strategy strongly depends on available funds to increase the possibility of
 ![Alt text](/Images/5.png?raw=true)
 
 ## Performance
+The first test live trading session started on Oct 13, 2022 and is running to this day. Process is active on a local machine, but the plan is to utilize a server environment in the future. Initial funds were 1150 USD which were used to trade minimum order volumes for all available USD pairs.
 ![Alt text](/Images/dce.png?raw=true)

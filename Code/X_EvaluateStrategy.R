@@ -430,3 +430,10 @@ pp<-ggplot(data = unique(tmp[, .(closetm_SELL, daily_sum)]), aes(x = closetm_SEL
   geom_bar(stat = "identity", colour = "black")+
   geom_hline(yintercept = unique(tmp[, .(closetm_SELL, daily_sum)])[, mean(daily_sum)], colour = "red")
 print(pp)
+
+pp<- ggplot(data = unique(tmp[, .(closetm_SELL, daily_sum)]), aes(x = closetm_SELL, y = daily_sum))+
+  geom_line(colour = "black")+
+  geom_smooth(method = "gam")
+  geom_hline(yintercept = unique(tmp[, .(closetm_SELL, daily_sum)])[, mean(daily_sum)], colour = "red")
+print(pp)
+
