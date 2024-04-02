@@ -10,22 +10,23 @@ data_path <- "Code/Parameter_optim/Data"
 
 # Parameters
 pair <- "ADAUSD"
-look_back <- 7 # days
+look_back <- 15 # days
 num_orders <- 8
 level_interval <- "hour" # "month", "day", "hour" (interval loaded must be < than level interval)
 exit <- "standard"
 median_number <- 5
 percent_apart <- 5
+
 # Fix path
 pair_data_results <- paste(data_path, pair, sep ="/")
 ticks <- c(15)
 units <- c(rep("minutes", 1))
 intervals <- paste(ticks, units, sep = " ")
 df_all <- trades_to_OHLC(pair = pair,
-                     interval = intervals,
-                     from_date = "2022-06-01",
-                     to_date = "2023-06-01",
-                     date_subset = F)[[1]]
+                         interval = intervals,
+                         from_date = "2024-03-15",
+                         to_date = "2024-03-31",
+                         date_subset = F)[[1]]
 
 train_period <- c(min(df_all$interval), min(df_all$interval)+days(look_back))
 test_period <- c(min(df_all$interval)+days(look_back+1), max(df_all$interval))

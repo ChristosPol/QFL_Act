@@ -10,6 +10,7 @@ invisible(sapply(files.sources, source))
 
 csv_path <- paste0("Data/trading_table.csv")
 orders <- fread(csv_path)
+orders <- orders[PAIR != "PLAUSD"]
 
 load("trades/trades.Rdata")
 df_hist <- copy(df)
@@ -94,9 +95,28 @@ f[quote_res > 0, colour := "positive"]
 pp <- ggplot(data = f, aes(x = PAIR, y = quote_res, fill = colour))+
   geom_col()+theme_light()+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
   scale_fill_manual(values= c("red", "darkgreen"))
+f[, target_profit := target_sell - cost_BUY_clean]
+f[, current_eval := current_cost - cost_BUY_clean]
+f[, amount_to_target := target_profit - current_eval]
 View(f)
 print(pp)
-sum(f$target_sell)-sum(f$current_cost)
-
-f[, percent_from_buy := (current_cost-cost_BUY_clean)/cost_BUY_clean*100]
-f[, percent_from_target := (target_sell)/current_cost*100]
+# sum(f$target_sell)-sum(f$current_cost)
+# 
+# library(RColorBrewer)
+# pdf(paste0("Alerts", "/open_orders.pdf"), onefile = TRUE)
+# pairs <- unique(f$PAIR)
+# for(i in 1:length(pairs)){
+#   test <- orders_upd1_closed[PAIR == pairs[i]]
+#   test[, interval := floor_date(as.POSIXct(closetm_BUY), unit = "2 hours")]
+#   cols <- data.table(PRICE_EXIT = unique(test$PRICE_EXIT), colour = brewer.pal(n = 10, name = "Paired")[1:length(unique(test$PRICE_EXIT))])
+#   test <- merge(test, cols, by= "PRICE_EXIT", all.x = T)
+#   df <- simple_OHLC(interval = 240, pair = pairs[i])
+#   setnames(df, "Date_POSIXct", "interval")
+#   df$interval <-  as.POSIXct(df$interval)
+#   p<- candles(data =df[interval >= min(test$interval)-days(5) & interval <= max(test$interval)+days(5)])+
+#     geom_point(data =test, aes(x = interval, y = PRICE_ENTER),colour = test$colour, size = 3)+
+#     geom_hline(yintercept = test$PRICE_EXIT, colour = test$colour)
+#   print(p)
+#   Sys.sleep(1.5)
+# }
+# dev.off()

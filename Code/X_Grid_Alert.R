@@ -17,45 +17,11 @@ all_pairs <- names(tb$result)
 all_pairs <- data.table(pairs = all_pairs, CUR=str_sub(all_pairs,start = -3))
 all_pairs[, leverage := unlist(lapply(lapply(tb$result,"[[", "leverage_buy"), length))]
 
-# all_pairs <- all_pairs[CUR%in%c("EUR", "USD", "CAD", "GBP", "JPY", "CHF")]
 all_pairs <- all_pairs[CUR%in%c( "USD")]
-# all_pairs <- all_pairs[leverage>0]
-# all_pairs <- all_pairs[CUR%in%c( "XBT")]
 EUR_pairs   <- sort(all_pairs$pairs)
 
-# avail_pairs <- myfun("https://api.kraken.com/0/public/AssetPairs", secret = API_Sign, key = API_Key)
-# all_pairs <- names(avail_pairs[[2]])
-# 
-# # Get only EUR related crypto pairs
-# EUR_pairs <- grep("USD", all_pairs, value = T)
-# # EUR_pairs <- grep(paste("EUR", "ETH", sep = "|"), all_pairs, value = T)
 
-# # Remove Forex pairs
-# to_remove <- grep(paste(c("EUR",
-#                           ".d",
-#                           "AUD",
-#                           "CAD",
-#                           "JPY",
-#                           "CHF",
-#                           "GBP",
-#                           "PAX",
-#                           "DAI",
-#                           "BAT"), collapse ="|"), EUR_pairs, value = T)
-# EUR_pairs <- EUR_pairs[!EUR_pairs %in% to_remove]
-# csv_path <- paste0("Data/minimums_calculated.csv")
-# EUR_pairs <- read_csv(csv_path)
-# EUR_pairs <- EUR_pairs$COIN
-# USD_pairs <- gsub("USD", "EUR", EUR_pairs )
-# EUR_pairs <- c(EUR_pairs, USD_pairs)
-# EUR_pairs <- sort(EUR_pairs)
 
-# Dynamic support and resistance
-# Get OHLC data and determine trends
-
-# look_back1 <- 100
-# look_back2 <- 500
-# n_sort <- 5
-# n_exclude <- 10
 interval <- 60
 
 
@@ -65,8 +31,6 @@ for (i in 1:length(EUR_pairs)){
   msg <- tryCatch({
     df <- simple_OHLC(interval = interval, pair = EUR_pairs[i])
     df[, candle_type := ifelse(close > open, "green", "red")]
-    # df$week <- lubridate::week(as.Date(df$Date_POSIXct))
-    # df$day <- lubridate::yday(as.Date(df$Date_POSIXct))
     df$week <- isoweek(as.Date(df$Date_POSIXct))
     df$weekday <- weekdays(as.Date(df$Date_POSIXct))
     weeks <- as.character(unique(df$week))
@@ -77,22 +41,14 @@ for (i in 1:length(EUR_pairs)){
     sp_test <- list()
     rs_test <- list()
     RS <- c()
-    j <-1
-    # for(j in 1:length(unique(splits[, seq]))){
+    
     for(j in 1:length(weeks)){
-      # subdf <- df[splits[seq == j, idx], ]
       subdf <- df[week == weeks[j], ]
-      
       SP[j] <- median(head(sort(subdf[, close]), 5))
       sp_test[[j]] <- c(min(head(sort(subdf[, close]), 5)), max(head(sort(subdf[, close]), 5)))
       rs_test[[j]] <- c(min(tail(sort(subdf[, close]), 5)), max(tail(sort(subdf[, close]), 5)))
       RS[j] <- median(tail(sort(subdf[, close]), 5))
     }
-  
-    # last_close <- tail(df[, close], 1)
-    # SP <- SP[SP < last_close]
-    # RS <- RS[RS > last_close]
-    
     df$x <- 1:nrow(df)
     df[, volume_quote := close*volume]
     
@@ -113,12 +69,9 @@ for (i in 1:length(EUR_pairs)){
       geom_vline(xintercept = df[, max(x), by  = week][, V1] , linetype="dotted", color = "black", size = 0.3)+ theme_classic()#+
     p2 <- p1+geom_hline(yintercept = SP[SP<tail(df$close, 1)], linetype ="twodash", color = "blue", size = 0.3) 
     p3 <- p2+geom_hline(yintercept = RS[RS>tail(df$close, 1)], linetype ="twodash", color = "red", size = 0.3) 
-    # p2 <- p1 + annotate("rect", xmin = xmin, xmax = xmax, ymin = min_sp, ymax = max_sp,fill = "blue", alpha= 0.2)
-    # p3 <- p2 + annotate("rect", xmin = xmin, xmax = xmax, ymin = min_rs, ymax = max_rs,fill = "red", alpha= 0.2)
-    
+
     per <- c()
     for(k in 1:length(unique(df$week))){
-      # subdf <- df[splits[seq == k, idx], ]
       subdf <- df[week == unique(df$week)[k], ]
       
       per[k] <- round((tail(subdf$close, 1) - head(subdf$close,1))/head(subdf$close, 1)*100, 2)
@@ -140,7 +93,6 @@ for (i in 1:length(EUR_pairs)){
   }, error = function(e){
   })
   print(i/length(EUR_pairs))
-  # print(paste0("Sharpe Ratio for: ",  EUR_pairs[i]," ", round(unique(df$sharpe), 4))) 
   Sys.sleep(1.1)
   
 }

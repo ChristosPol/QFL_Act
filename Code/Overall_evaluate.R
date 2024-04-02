@@ -40,7 +40,7 @@ url = "https://api.kraken.com/0/private/ClosedOrders"
 # 
 i <- 1
 trades_raw <- list()
-while (offset <= 19000) {
+while (offset <= 25000) {
 
   trades_raw[[i]] <- get_trade_history(url, key, secret, offset)
 
@@ -107,8 +107,6 @@ orders_upd1[, closetm_SELL := anytime(as.numeric(as.character(closetm_SELL)))]
 
 
 orders_upd1_closed <- orders_upd1[STATUS_BUY == "CLOSED" & STATUS_SELL == "CLOSED"]
-
-
 
 orders_upd1_closed[, cost_BUY := as.numeric(cost_BUY)]
 orders_upd1_closed[, cost_SELL := as.numeric(cost_SELL)]
@@ -194,7 +192,7 @@ summary <- data.table(Column = c("Start", "End", "Initial funds available (USD)"
 
 
 # orders_upd1_closed[, sum(cost_BUY_clean), by = PAIR]
-load("Data/evaluation/all_trades.rdata")
+# load("Data/evaluation/all_trades.rdata")
 save(all_trades, file = "Data/evaluation/all_trades.rdata")
 
 eq <- copy(orders_upd1_closed[!is.na(quote_result_clean)])
@@ -319,7 +317,7 @@ p1 <- ggplot(data=quote_equity, aes(x= closetm_SELL, y = cumul))+
   # theme(axis.text.x = element_blank())+
   theme(panel.grid.minor = element_blank())+
   scale_y_continuous(breaks = round(seq(0, max(quote_equity$cumul)+50,  50)),
-                     sec.axis = sec_axis( trans=~./init*100, name="% Gain",breaks = round(seq(0, 135,  10))))
+                     sec.axis = sec_axis( trans=~./init*100, name="% Gain",breaks = round(seq(0, 180,  10))))
 
 p1
 ggsave(filename = "Data/evaluation/dce.png", height = 5, width =10)
@@ -335,8 +333,17 @@ quote_equity <- merge(calendar, quote_equity, by.x = "calendar_time", by.y = "cl
 quote_equity$cumul <- na.locf(quote_equity$cumul)
 quote_equity[is.na(quote_result_clean), quote_result_clean := 0]
 quote_equity[is.na(quote_per_clean), quote_per_clean := 0]
+quote_equity[, equity := 1150+cumul]
+
+ggplot(data=quote_equity, aes(x= equity, y = quote_result_clean))+
+  geom_point(colour = "black")+
+  geom_smooth()
+
+plot(EMA(quote_equity$quote_result_clean, 100))
 
 
+
+write_csv(quote_equity, "quote_equity.csv")
 
 init <- 1150
 p1 <- ggplot(data=quote_equity, aes(x= calendar_time, y = cumul))+
@@ -353,6 +360,19 @@ p1 <- ggplot(data=quote_equity, aes(x= calendar_time, y = cumul))+
 
 
 p1
+
+quote_equity[, equity := 1150+cumul]
+plot(quote_equity$equity, quote_equity$quote_result_clean)
+fit <- lm(quote_result_clean ~equity, data=quote_equity)
+abline(fit)
+
+ggplot(data=quote_equity, aes(x= equity, y=quote_result_clean))+
+  geom_point(colour = "black")+
+  geom_smooth(method = "gam")
+
+
+data.table(returns_pre = predict(fit, newdata = data.table(equity = seq(3000, 50000, 1000))),equity_fut =  seq(3000, 50000, 1000))
+
 
 # plot(quote_equity$nro, quote_equity$cumul)
 # fit <- lm(quote_equity$cumul~ quote_equity$nro)
@@ -538,7 +558,7 @@ ggplot(data=alpha, aes(x = Date_POSIXct, y= cum_diff_per, colour = PAIR))+
 
 status <- alpha[Date_POSIXct == max(Date_POSIXct)]
 setorder(status, -cum_diff_per)
-quantile(status$cum_diff_per, probs = .82)
+quantile(status$cum_diff_per, probs = .80)
 
 
 load("Data/evaluation/alpha.Rdata")
@@ -546,7 +566,7 @@ ggplot(data = alpha, aes(x = Date_POSIXct, y = cum_diff_per, colour = PAIR))+
   geom_line(alpha = 0.2)+
   geom_line(data=alpha[PAIR == "CP"],  aes(x = Date_POSIXct, y = cum_diff_per), colour = "white")+
   dark_theme_gray()+
-  coord_cartesian(ylim = c(-200, 700))+
+  coord_cartesian(ylim = c(-200, 1500))+
   ylab("Percentage cumulative returns")+
   xlab("Date")+
   ggtitle("Strategy returns vs single asset portfolio, currently at 0.82 quantile")+

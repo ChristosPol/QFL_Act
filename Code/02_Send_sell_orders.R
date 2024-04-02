@@ -27,7 +27,8 @@ url = "https://api.kraken.com/0/private/ClosedOrders"
 print("#4 Getting order history from kraken")
 i <- 1
 trades_raw <- list()
-norder <- 14000
+norder <- 18000
+
 offset <- 0
 print(paste0("#5 Obtaining the last ", norder, " trades"))
 

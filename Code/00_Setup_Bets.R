@@ -1,24 +1,23 @@
 # ------------------------------------------------------------------------------
 rm(list = ls())
 path_source <- "Source"
-library(stringr)
-library(tidyr)
-library(tibble)
-
 files.sources = list.files(path_source, full.names = T)
 sapply(files.sources, source)
 interval <- 60
-budget <- current_avail_funds()
-round(budget/40)
-
+budget <- current_avail_funds();budget
+n_pairs_avail <- round(budget/40);n_pairs_avail
 minimum <- T
 use_existing_price_levels <- F
-each_usd <- 5
+each_usd <- 30
 n_orders <- 8 
 grid <- c(0.025,0.05,0.075,0.1, 0.125, 0.15, 0.2, 0.25)
 csv_path <- paste0("Data/trading_table.csv")
 orders <- fread(csv_path)
 open_orders <- orders[STATUS_SELL == "OPEN"]
+possible_enter <- orders[STATUS_BUY == "OPEN"][, .N, by= PAIR]
+setorder(possible_enter, N)
+pairs <- possible_enter[1:n_pairs_avail, ]
+
 # ------------------------------------------------------------------------------
 # Get all pairs
 url <- paste0("https://api.kraken.com/0/public/AssetPairs")
@@ -27,10 +26,21 @@ all_pairs <- names(tb$result)
 all_pairs <- data.table(PAIR = all_pairs, CUR=str_sub(all_pairs,start = -3))
 all_pairs <- all_pairs[CUR%in%c("USD")]
 
+if(any(!all_pairs$PAIR %in% all_pairs_stored)){
+  new_pair <- all_pairs$PAIR[!all_pairs$PAIR %in% all_pairs_stored]
+  print("Consider adding new pair to potential pair list")
+}
+
+
 out <- c("AUDUSD", "DAIUSD", "ETHPYUSD", "ETHWUSD", "EURTUSD",
         "PAXGUSD", "PYTHUSD", "PYUSDUSD", "TBTCUSD", "TUSDUSD", "USDCUSD", "USDTZUSD",
-        "USTUSD", "WBTCUSD", "XBTPYUSD", "ZEURZUSD", "ZGBPZUSD")
+        "USTUSD", "WBTCUSD", "XBTPYUSD", "ZEURZUSD", "ZGBPZUSD",
+        "LUNA2USD", "LUNAUSD", "MSOLUSD","AUDUSD","DAIUSD","MSOLUSD",
+        "TBTCUSD","USDCUSD","USDTZUSD","WBTCUSD","WAXLUSD",
+        "ZEURZUSD","ZGBPZUSD","EURTUSD","LUNA2USD",
+        "PAXGUSD","TRIBE", "ZEURZUSD", "ZGBPZUSD", "ETHPYUSD")
 all_pairs <- all_pairs[!PAIR %in% out]
+
 
 # Get last price
 url <- paste0("https://api.kraken.com/0/public/Ticker")
@@ -54,38 +64,21 @@ minimums_calculated$MIN <- unlist(minimums_calculated$MIN)
 
 fwrite(minimums_calculated, file = paste0("/Users/christos.polysopoulos/Repositories/QFL_Act/Data/minimums_calculated.csv"))
 
-rem <- c("AUDUSD",
-         "DAIUSD",
-         "MSOLUSD",
-         "TBTCUSD",
-         "USDCUSD",
-         "USDTZUSD",
-         "WBTCUSD",
-         "WAXLUSD",
-         "ZEURZUSD",
-         "ZGBPZUSD",
-         "EURTUSD",
-         "LUNA2USD",
-         "PAXGUSD",
-         "TRIBE", "ZEURZUSD", "ZGBPZUSD", "ETHPYUSD")
-all_pairs <- all_pairs[!PAIR %in% rem]
 
-
-# rand <- sample(unique(all_pairs$PAIR), 10)
-# all_pairs <- all_pairs[PAIR %in% rand]
-
-# Select which pairs to trade
-trade <- c("1INCHUSD", "AAVEUSD", "ACHUSD", "ADXUSD", "ALGOUSD", "ANTUSD", 
-           "API3USD", "ARPAUSD", "ATLASUSD", "ATOMUSD", "BALUSD", "BATUSD", "BLZUSD", "BNTUSD", "BSXUSD",
-           "CELRUSD", "CFGUSD", 
-           "COTIUSD", "CSMUSD", "CVCUSD", "CVXUSD", "DOTUSD", "DYDXUSD",
-           "EGLDUSD", "ENJUSD", "FETUSD", "FISUSD", "FLOWUSD", 
-           "FLRUSD", "FXSUSD", "GMTUSD", "GRTUSD", "GTCUSD",
-           "HFTUSD", "KARUSD", "KINUSD", "LINKUSD", "MANAUSD", "MASKUSD", 
-           "MATICUSD", "MCUSD", "MULTIUSD", "MXCUSD", "OGNUSD",
-           "ORCAUSD", "POLSUSD", "RENUSD", "SNXUSD", "SUIUSD", "SUSHIUSD", 
-           "TUSD", "XXRPZUSD")
-all_pairs <- all_pairs[PAIR %in% trade]
+rand <- sample(unique(all_pairs$PAIR), n_pairs_avail)
+rand1 <- c("1INCHUSD","ADAUSD","ADXUSD","AGLDUSD","ALPHAUSD","ANTUSD","API3USD",
+          "ARBUSD","ATOMUSD","BADGERUSD","BANDUSD","BLURUSD","BLZUSD","BNTUSD",
+          "BONDUSD","C98USD","CFGUSD","CHRUSD","CHZUSD","DYDXUSD","DYMUSD",
+          "EGLDUSD","ENSUSD","FARMUSD","FXSUSD","GARIUSD","GMTUSD","GMXUSD",
+          "HDXUSD","HFTUSD","ICPUSD","ICXUSD","IDEXUSD","IMXUSD","INJUSD",
+          "KEEPUSD","KP3RUSD","KSMUSD","LCXUSD","LINKUSD","MASKUSD","MCUSD","MNGOUSD","NODLUSD"
+          ,"OGNUSD","OPUSD","ORCAUSD","OXTUSD","PERPUSD","POWRUSD","RADUSD"
+          ,"RAREUSD","RLCUSD","SNXUSD","STGUSD","STORJUSD","STXUSD"
+          ,"SUIUSD","SUPERUSD","TRUUSD","TUSD","UMAUSD","UNFIUSD")
+# rand1 <- c("LDOUSD")
+rand1 <- pairs$PAIR
+# rand <- rand[!rand %in%rand1]
+all_pairs <- all_pairs[PAIR %in% "XXRPZUSD"]
 
 
 trading_table <- data.frame(PAIR = rep(all_pairs$PAIR, each = n_orders),
@@ -185,12 +178,8 @@ trading_table[,STATUS_SELL := NA]
 
 trading_table[, PRICE_ENTER := round(PRICE_ENTER, DECIMAL)]
 trading_table[, PRICE_EXIT := round(PRICE_EXIT, DECIMAL)]
-# trading_table[, per := (PRICE_EXIT-PRICE_ENTER)/PRICE_ENTER]
-# trading_table$per <- NULL
 trading_table[, DECIMAL := NULL]
 trading_table[, BET_ENTER := as.numeric(VOL)*PRICE_ENTER]
-# trading_table[, BET_ENTER := 1.2*as.numeric(VOL)*PRICE_ENTER]
-# trading_table[, VOL:= 1.2*as.numeric(VOL)]
 
 
 cumul <- trading_table[, list(SUM_BET = sum(BET_ENTER)), by = PAIR]

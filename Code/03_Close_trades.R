@@ -46,6 +46,7 @@ while (offset <= ntrades) {
 
 myls <- list()
 df_list <- list()
+k <- 1
 for(k in 1:length(trades_raw)){
   
   for (i in 1:length(trades_raw[[k]]$result$closed)){

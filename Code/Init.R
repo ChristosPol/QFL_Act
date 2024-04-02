@@ -10,4 +10,5 @@ source("code/X_EvaluateStrategy.R")
 # Evaluate all open positions
 source("code/current_status_open.R")
 
+budget <- current_avail_funds();budget
 

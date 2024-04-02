@@ -424,16 +424,33 @@ tmp[, closetm_SELL := as.Date(substr(closetm_SELL, 1, 10))]
 tmp <- tmp[, sum(quote_result_clean), by = c("closetm_SELL", "PAIR")]
 setorder(tmp, -closetm_SELL, -V1)
 tmp[, daily_sum := sum(V1), by = closetm_SELL]
+tmp <- tmp[!is.na(closetm_SELL)]
+# pp<-ggplot(data = unique(tmp[, .(closetm_SELL, daily_sum)]), aes(x = closetm_SELL, y = daily_sum))+
+#   geom_bar(stat = "identity", colour = "black")+
+#   geom_hline(yintercept = unique(tmp[, .(closetm_SELL, daily_sum)])[, mean(daily_sum)], colour = "red")
+# print(pp)
+dat <- unique(tmp[, .(closetm_SELL, daily_sum)])
+setorder(dat, closetm_SELL)
+dat$ema_10 <- EMA(dat$daily_sum, 30)
+pp<- ggplot(data = dat, aes(x = closetm_SELL, y = daily_sum))+
+  geom_point(colour = "green")+
+  geom_smooth(span = 0.1, se = F)+
+  geom_line(aes(x=closetm_SELL, y = ema_10 ))+
+  geom_hline(yintercept = mean(dat$daily_sum), colour = "red")+
+  dark_theme_gray()+
+  scale_y_continuous(breaks = seq(0, max(dat$daily_sum), 2))
+print(pp)
 View(tmp)
 
-pp<-ggplot(data = unique(tmp[, .(closetm_SELL, daily_sum)]), aes(x = closetm_SELL, y = daily_sum))+
-  geom_bar(stat = "identity", colour = "black")+
-  geom_hline(yintercept = unique(tmp[, .(closetm_SELL, daily_sum)])[, mean(daily_sum)], colour = "red")
-print(pp)
-
-pp<- ggplot(data = unique(tmp[, .(closetm_SELL, daily_sum)]), aes(x = closetm_SELL, y = daily_sum))+
-  geom_line(colour = "black")+
-  geom_smooth(method = "gam")
-  geom_hline(yintercept = unique(tmp[, .(closetm_SELL, daily_sum)])[, mean(daily_sum)], colour = "red")
-print(pp)
-
+# 
+# dat[, cumsum := cumsum(daily_sum)]
+# ggplot(data = dat, aes(x = cumsum, y = daily_sum))+
+#   geom_line(colour = "black")+
+#   geom_smooth(method = "lm")
+# fit <- lm(daily_sum~cumsum, data =dat)
+# newdata = data.frame(cumsum = seq(1200, 5000, by= 50))
+# dat1 <- rbind(dat, data.frame(cumsum=newdata,  daily_sum = predict(fit, newdata = newdata)), fill =T)
+# 
+# ggplot(data = dat1, aes(x = cumsum, y = daily_sum))+
+#   geom_point(colour = "black")+
+#   geom_smooth(method = "lm")
