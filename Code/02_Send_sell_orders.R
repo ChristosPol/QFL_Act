@@ -96,4 +96,3 @@ for(i in 1:nrow(orders)){
 fwrite(orders, file = paste0("/Users/christos.polysopoulos/Repositories/QFL_Act/Data/trading_table.csv"))
 
 print(paste0("Process finished at: ",Sys.time()))
-

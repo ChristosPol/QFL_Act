@@ -48,3 +48,5 @@ vignettes/*.pdf
 /trades/**.Rdata
 /Code/*.log
 /Code/Parameter_optim/Data
+
+*csv

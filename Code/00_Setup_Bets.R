@@ -8,7 +8,7 @@ budget <- current_avail_funds();budget
 n_pairs_avail <- round(budget/40);n_pairs_avail
 minimum <- T
 use_existing_price_levels <- F
-each_usd <- 30
+each_usd <- 5
 n_orders <- 8 
 grid <- c(0.025,0.05,0.075,0.1, 0.125, 0.15, 0.2, 0.25)
 csv_path <- paste0("Data/trading_table.csv")
@@ -66,19 +66,19 @@ fwrite(minimums_calculated, file = paste0("/Users/christos.polysopoulos/Reposito
 
 
 rand <- sample(unique(all_pairs$PAIR), n_pairs_avail)
-rand1 <- c("1INCHUSD","ADAUSD","ADXUSD","AGLDUSD","ALPHAUSD","ANTUSD","API3USD",
-          "ARBUSD","ATOMUSD","BADGERUSD","BANDUSD","BLURUSD","BLZUSD","BNTUSD",
-          "BONDUSD","C98USD","CFGUSD","CHRUSD","CHZUSD","DYDXUSD","DYMUSD",
-          "EGLDUSD","ENSUSD","FARMUSD","FXSUSD","GARIUSD","GMTUSD","GMXUSD",
-          "HDXUSD","HFTUSD","ICPUSD","ICXUSD","IDEXUSD","IMXUSD","INJUSD",
-          "KEEPUSD","KP3RUSD","KSMUSD","LCXUSD","LINKUSD","MASKUSD","MCUSD","MNGOUSD","NODLUSD"
-          ,"OGNUSD","OPUSD","ORCAUSD","OXTUSD","PERPUSD","POWRUSD","RADUSD"
-          ,"RAREUSD","RLCUSD","SNXUSD","STGUSD","STORJUSD","STXUSD"
-          ,"SUIUSD","SUPERUSD","TRUUSD","TUSD","UMAUSD","UNFIUSD")
-# rand1 <- c("LDOUSD")
-rand1 <- pairs$PAIR
+rand1 <- c("ACAUSD","ACHUSD","ADXUSD","AGLDUSD","ALCXUSD","ALPHAUSD","ANTUSD",
+          "API3USD","ARPAUSD","AUDIOUSD","BLURUSD","BONDUSD","BONKUSD","BRICKUSD",
+          "C98USD","CFGUSD","CTSIUSD","DYMUSD","EGLDUSD","ENSUSD","EULUSD",
+          "FARMUSD","FETUSD","FIDAUSD","FISUSD","FLRUSD","GALUSD","GARIUSD",
+          "GMTUSD","HDXUSD","HNTUSD","ICXUSD","IMXUSD","KAVAUSD","KILTUSD",
+          "KINUSD","KP3RUSD","LPTUSD","LSKUSD","MCUSD","MNGOUSD","NMRUSD","NODLUSD","OGNUSD"
+          ,"PEPEUSD","POLSUSD","POWRUSD","RADUSD","RBCUSD","RENUSD","REPV2USD"
+          ,"RLCUSD","ROOKUSD","SCRTUSD","SDNUSD","SGBUSD","STGUSD"
+          ,"STORJUSD","SUIUSD","SUPERUSD","SYNUSD","TUSDUSD")
+rand <- pairs$PAIR
+# rand1 <- pairs$PAIR
 # rand <- rand[!rand %in%rand1]
-all_pairs <- all_pairs[PAIR %in% "XXRPZUSD"]
+all_pairs <- all_pairs[PAIR %in% rand]
 
 
 trading_table <- data.frame(PAIR = rep(all_pairs$PAIR, each = n_orders),

@@ -32,19 +32,19 @@ The first test live trading session started on Oct 13, 2022 and is running to th
 | Column      | Value |
 | ----------- | ----------- |
 |Start|2022-10-13|
-|End|2024-01-15|
+|End|2024-04-21|
 |Initial funds available (USD)|1150|
-|Returns in USD|1451|
-|Returns in %|126.2|
-|N trades|3565|
-|Wins|3520|
-|Losses|45|
-|Win ratio|98.7|
-|Average win %|9.3|
-|Biggest win %|166.6|
+|Returns in USD|2438|
+|Returns in %|211.9|
+|N trades|5186|
+|Wins|5139|
+|Losses|47|
+|Win ratio|99.1|
+|Average win %|10.1|
+|Biggest win %|177|
 |Biggest loss %|-55.3|
-|Days trading|459|
-|Average n trades per day|7.8|
+|Days trading|555|
+|Average n trades per day|9.34|
 
 
 ![Alt text](/Images/dce.png?raw=true)
