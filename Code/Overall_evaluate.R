@@ -307,6 +307,8 @@ colnames(quote_equity)[2] <- "quote_result_clean"
 setorder(quote_equity,closetm_SELL)
 quote_equity[, cumul := cumsum(quote_result_clean)]
 
+quote_equity_overall <- copy(quote_equity)
+save(quote_equity_overall, file= "quote_equity_overall.rdata")
 p1 <- ggplot(data=quote_equity, aes(x= closetm_SELL, y = cumul))+
   geom_line(colour = "green", size =1)+
   # geom_point(colour = "darkgreen", size = 0.2,stroke = 1, shape =1)+
@@ -317,7 +319,7 @@ p1 <- ggplot(data=quote_equity, aes(x= closetm_SELL, y = cumul))+
   # theme(axis.text.x = element_blank())+
   theme(panel.grid.minor = element_blank())+
   scale_y_continuous(breaks = round(seq(0, max(quote_equity$cumul)+50,  50)),
-                     sec.axis = sec_axis( trans=~./init*100, name="% Gain",breaks = round(seq(0, 180,  10))))
+                     sec.axis = sec_axis( trans=~./init*100, name="% Gain",breaks = round(seq(0, 220,  10))))
 
 p1
 ggsave(filename = "Data/evaluation/dce.png", height = 5, width =10)
@@ -558,7 +560,7 @@ ggplot(data=alpha, aes(x = Date_POSIXct, y= cum_diff_per, colour = PAIR))+
 
 status <- alpha[Date_POSIXct == max(Date_POSIXct)]
 setorder(status, -cum_diff_per)
-quantile(status$cum_diff_per, probs = .80)
+quantile(status$cum_diff_per, probs = .84)
 
 
 load("Data/evaluation/alpha.Rdata")
@@ -569,7 +571,7 @@ ggplot(data = alpha, aes(x = Date_POSIXct, y = cum_diff_per, colour = PAIR))+
   coord_cartesian(ylim = c(-200, 1500))+
   ylab("Percentage cumulative returns")+
   xlab("Date")+
-  ggtitle("Strategy returns vs single asset portfolio, currently at 0.82 quantile")+
+  ggtitle("Strategy returns vs single asset portfolio, currently at 0.84 quantile")+
   scale_x_date(date_labels="%d-%m-%Y",date_breaks  ="90 day")+
   theme(legend.position = "none")
 ggsave(filename = "Data/evaluation/alpha.png", height = 5, width =10)

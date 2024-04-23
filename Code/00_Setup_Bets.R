@@ -66,19 +66,12 @@ fwrite(minimums_calculated, file = paste0("/Users/christos.polysopoulos/Reposito
 
 
 rand <- sample(unique(all_pairs$PAIR), n_pairs_avail)
-rand1 <- c("ACAUSD","ACHUSD","ADXUSD","AGLDUSD","ALCXUSD","ALPHAUSD","ANTUSD",
-          "API3USD","ARPAUSD","AUDIOUSD","BLURUSD","BONDUSD","BONKUSD","BRICKUSD",
-          "C98USD","CFGUSD","CTSIUSD","DYMUSD","EGLDUSD","ENSUSD","EULUSD",
-          "FARMUSD","FETUSD","FIDAUSD","FISUSD","FLRUSD","GALUSD","GARIUSD",
-          "GMTUSD","HDXUSD","HNTUSD","ICXUSD","IMXUSD","KAVAUSD","KILTUSD",
-          "KINUSD","KP3RUSD","LPTUSD","LSKUSD","MCUSD","MNGOUSD","NMRUSD","NODLUSD","OGNUSD"
-          ,"PEPEUSD","POLSUSD","POWRUSD","RADUSD","RBCUSD","RENUSD","REPV2USD"
-          ,"RLCUSD","ROOKUSD","SCRTUSD","SDNUSD","SGBUSD","STGUSD"
-          ,"STORJUSD","SUIUSD","SUPERUSD","SYNUSD","TUSDUSD")
-rand <- pairs$PAIR
+rand1 <- c("ALPHAUSD","ANTUSD","BEAMUSD","BLURUSD","BLZUSD","BRICKUSD","EGLDUSD",
+          "FETUSD","FLRUSD","FXSUSD","IMXUSD","JASMYUSD", "KP3RUSD", "RBCUSD")
+# rand <- pairs$PAIR
 # rand1 <- pairs$PAIR
 # rand <- rand[!rand %in%rand1]
-all_pairs <- all_pairs[PAIR %in% rand]
+all_pairs <- all_pairs[PAIR %in% rand1]
 
 
 trading_table <- data.frame(PAIR = rep(all_pairs$PAIR, each = n_orders),

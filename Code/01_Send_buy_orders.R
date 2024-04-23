@@ -7,7 +7,7 @@ files.sources = list.files(path_source, full.names = T)
 sapply(files.sources, source)
 
 csv_path <- paste0("Data/trading_table.csv")
-orders <- read_csv(csv_path)
+orders <- read_csv(csv_path);nrow(orders)
 
 for(i in 1:nrow(orders)){
   msg <- tryCatch({

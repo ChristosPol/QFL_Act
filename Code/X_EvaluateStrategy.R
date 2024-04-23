@@ -323,6 +323,9 @@ print(p1)
 print(wins_overall)
 print(round(wins_overall$sum_earned/init*100,2))
 print(tail(quote_equity,6))
+
+
+# save(quote_equity, file ="quote_equity.rdata")
 # eq_per <- copy(orders_upd1_closed)
 # eq_per[, closetm_SELL := substr(closetm_SELL, 1, 10)]
 # eq_per[, closetm_SELL := as.Date(closetm_SELL)]
