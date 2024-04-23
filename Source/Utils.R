@@ -34,6 +34,7 @@ suppressMessages(library(ggpubr))
 suppressMessages(library(ggdark))
 suppressMessages(library(tibble))
 suppressMessages(library(tidyr))
+suppressMessages(library(rjson))
 
 # Options
 setDTthreads(1)
