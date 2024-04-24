@@ -71,7 +71,7 @@ rand1 <- c("ALPHAUSD","ANTUSD","BEAMUSD","BLURUSD","BLZUSD","BRICKUSD","EGLDUSD"
 # rand <- pairs$PAIR
 # rand1 <- pairs$PAIR
 # rand <- rand[!rand %in%rand1]
-all_pairs <- all_pairs[PAIR %in% rand1]
+all_pairs <- all_pairs[PAIR %in% rand]
 
 
 trading_table <- data.frame(PAIR = rep(all_pairs$PAIR, each = n_orders),

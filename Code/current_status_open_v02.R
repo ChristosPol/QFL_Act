@@ -8,53 +8,60 @@ path_source <- "Source"
 files.sources = list.files(path_source, full.names = T)
 invisible(sapply(files.sources, source))
 
+load("trades/all_orders_cache.Rdata")
+
 csv_path <- paste0("Data/trading_table.csv")
 orders <- fread(csv_path)
 orders <- orders[PAIR != "PLAUSD"]
 
-load("trades/trades.Rdata")
-df_hist <- copy(df)
-rm(df)
 key = API_Key
 secret = API_Sign
 
 offset <- 0
 url = "https://api.kraken.com/0/private/ClosedOrders"
 
-i <- 1
-trades_raw <- list()
-namen <- list()
-dfs <- list()
-while (offset <= 1000) {
-   
-  trades_raw[[i]] <- get_trade_history(url, key, secret, offset)
-  trades_raw <- lapply(trades_raw[[i]]$result$closed, function(x){x$descr <- NULL;x})
-  namen[[i]] <- names(trades_raw)
-  dfs[[i]] <- rbindlist(trades_raw, fill = T)
-  offset <- offset + 50
-  i <- i +1  
-  Sys.sleep(3)
-  print(offset)
-}
-
-df <- rbindlist(dfs, fill =T)
-df[, ids := unlist(namen)]
-df <- df[status == "closed"]
-key <- c("ids", "opentm", "closetm", "vol", "vol_exec", "cost", "fee", "price")
-df <- df[, .(ids, opentm, closetm, vol, vol_exec, cost, fee, price)]
+# Update cache
+last_n_orders <- get_n_hist_orders(n = 200)
+idx <- which(!last_n_orders$order_id%in%all_orders_cache$order_id)
+all_orders_cache <- rbind(last_n_orders[idx, ], all_orders_cache, fill = T)
+save(all_orders_cache, file = "trades/all_orders_cache.Rdata")
 
 
-df <- rbind(df_hist, df[ids %in% df$ids[!df$ids %in% df_hist$ids],])
+df <- all_orders_cache[status == "closed"]
+key <- c("order_id", "opentm", "closetm", "vol", "vol_exec", "cost", "fee", "price")
+df <- df[, ..key]
 
-save(df, file ="trades/trades.Rdata")
+# i <- 1
+# trades_raw <- list()
+# namen <- list()
+# dfs <- list()
+# while (offset <= 1000) {
+#    
+#   trades_raw[[i]] <- get_trade_history(url, key, secret, offset)
+#   trades_raw <- lapply(trades_raw[[i]]$result$closed, function(x){x$descr <- NULL;x})
+#   namen[[i]] <- names(trades_raw)
+#   dfs[[i]] <- rbindlist(trades_raw, fill = T)
+#   offset <- offset + 50
+#   i <- i +1  
+#   Sys.sleep(3)
+#   print(offset)
+# }
+
+# df <- rbindlist(dfs, fill =T)
+# df[, ids := unlist(namen)]
+# df <- df[status == "closed"]
+# key <- c("ids", "opentm", "closetm", "vol", "vol_exec", "cost", "fee", "price")
+# df <- df[, .(ids, opentm, closetm, vol, vol_exec, cost, fee, price)]
+# df <- rbind(df_hist, df[ids %in% df$ids[!df$ids %in% df_hist$ids],])
+# save(df, file ="trades/trades.Rdata")
 
 
 df_original <- copy(df)
 colnames(df) <- paste0(colnames(df), "_BUY")
-orders_upd <- merge(orders, df, by.x = "ORDER_BUY_ID", by.y = "ids_BUY",all.x =T) 
+orders_upd <- merge(orders, df, by.x = "ORDER_BUY_ID", by.y = "order_id_BUY",all.x =T) 
 df <- copy(df_original)
 colnames(df) <- paste0(colnames(df), "_SELL")
-orders_upd1 <- merge(orders_upd, df, by.x = "ORDER_SELL_ID", by.y = "ids_SELL",all.x =T) 
+orders_upd1 <- merge(orders_upd, df, by.x = "ORDER_SELL_ID", by.y = "order_id_SELL",all.x =T) 
 orders_upd1[, ':='(opentm_BUY = anytime(as.numeric(as.character(opentm_BUY))),
                   closetm_BUY = anytime(as.numeric(as.character(closetm_BUY))),
                   opentm_SELL = anytime(as.numeric(as.character(opentm_SELL))),
@@ -76,14 +83,14 @@ orders_upd1_closed[, current_cost:= current_price*as.numeric(vol_exec_BUY)]
 orders_upd1_closed[, result_per := (current_cost - cost_BUY_clean)/cost_BUY_clean*100]
 orders_upd1_closed$vol_exec_BUY <-as.numeric(orders_upd1_closed$vol_exec_BUY)
 
-orders_upd1_closed[, target_sell_clean := (vol_exec_BUY * PRICE_EXIT)-0.0016*(vol_exec_BUY * PRICE_EXIT)]
+orders_upd1_closed[, target_sell_clean := (vol_exec_BUY * PRICE_EXIT)-0.0020*(vol_exec_BUY * PRICE_EXIT)]
 
-f <- orders_upd1_closed[, list(quote_res = sum(current_cost - cost_BUY_clean),
-                               avg_per = mean(result_per),
-                               current_cost=sum(current_cost),
-                               cost_BUY_clean = sum(cost_BUY_clean),
-                               target_sell = sum(target_sell_clean),
-                               VOL= sum(vol_exec_BUY)), by = PAIR]
+f <- orders_upd1_closed[, list(quote_res = sum(current_cost - cost_BUY_clean, na.rm =T),
+                               avg_per = mean(result_per, na.rm =T),
+                               current_cost=sum(current_cost, na.rm =T),
+                               cost_BUY_clean = sum(cost_BUY_clean, na.rm =T),
+                               target_sell = sum(target_sell_clean, na.rm =T),
+                               VOL= sum(vol_exec_BUY, na.rm =T)), by = PAIR]
 
 print(sum(f$quote_res))
 print(mean(f$avg_per))

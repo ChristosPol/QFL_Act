@@ -361,7 +361,7 @@ print(tail(quote_equity,6))
 tmp <- copy(orders_upd1_closed)
 tmp[, closetm_SELL := as.Date(substr(closetm_SELL, 1, 10))]
 print("some trades did closed properly")
-tmp[is.na(percent_result_clean), PAIR]
+print(tmp[is.na(percent_result_clean), PAIR])
 tmp <- tmp[!is.na(percent_result_clean)]
 
 tmp <- tmp[, sum(quote_result_clean), by = c("closetm_SELL", "PAIR")]

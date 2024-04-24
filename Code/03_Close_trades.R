@@ -16,7 +16,7 @@ offset <- 0
 url = "https://api.kraken.com/0/private/ClosedOrders"
 
 # Update cache
-last_n_orders <- get_n_hist_orders(n = 100)
+last_n_orders <- get_n_hist_orders(n = 200)
 idx <- which(!last_n_orders$order_id%in%all_orders_cache$order_id)
 all_orders_cache <- rbind(last_n_orders[idx, ], all_orders_cache, fill = T)
 save(all_orders_cache, file = "trades/all_orders_cache.Rdata")
