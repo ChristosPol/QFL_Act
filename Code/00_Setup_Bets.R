@@ -65,13 +65,19 @@ minimums_calculated$MIN <- unlist(minimums_calculated$MIN)
 fwrite(minimums_calculated, file = paste0("/Users/christos.polysopoulos/Repositories/QFL_Act/Data/minimums_calculated.csv"))
 
 
-rand <- sample(unique(all_pairs$PAIR), n_pairs_avail)
-rand1 <- c("ALPHAUSD","ANTUSD","BEAMUSD","BLURUSD","BLZUSD","BRICKUSD","EGLDUSD",
-          "FETUSD","FLRUSD","FXSUSD","IMXUSD","JASMYUSD", "KP3RUSD", "RBCUSD")
+# rand <- sample(unique(all_pairs$PAIR), n_pairs_avail)
+rand1 <- c( "ACAUSD",  "ACHUSD"  ,"ALGOUSD"  , "ALPHAUSD"  , "ANKRUSD"   ,"ANTUSD"  , "API3USD",   "APTUSD",  
+            "AUDIOUSD"  , "BANDUSD",  "BEAMUSD", "BLURUSD",   "BOBAUSD"  , "BONKUSD",   "BSXUSD",   "CELRUSD",  
+            "CFGUSD",   "COTIUSD",   "CRVUSD",   "DENTUSD"  , "DYDXUSD" , "EGLDUSD",  "EULUSD" , "FARMUSD", 
+            "FETUSD",  "FIDAUSD",   "FXSUSD" , "GALAUSD"  , "GARIUSD" , "GLMRUSD",  "HDXUSD",  "ICPUSD", 
+            "KILTUSD" , "KINTUSD",   "LCXUSD" , "LRCUSD",  "LSKUSD"  ,"MANAUSD",  "OCEANUSD"  ,"ONDOUSD"  ,
+            "OPUSD"  , "RARIUSD" ,"RPLUSD",  "SAMOUSD",  "SBRUSD"  , "SCRTUSD",  "SPELLUSD", "STRKUSD",  
+            "TEERUSD", "TLMUSD", "TOKEUSD" )
+
 # rand <- pairs$PAIR
 # rand1 <- pairs$PAIR
 # rand <- rand[!rand %in%rand1]
-all_pairs <- all_pairs[PAIR %in% rand]
+all_pairs <- all_pairs[PAIR %in% rand1]
 
 
 trading_table <- data.frame(PAIR = rep(all_pairs$PAIR, each = n_orders),
@@ -152,7 +158,7 @@ if(minimum){
 # Define exit points depending on open orders
 open_orders_sel <- open_orders[PAIR %in% trading_table$PAIR]
 exit_points <- unique(open_orders_sel[, .(PAIR, PRICE_EXIT)])
-exit_points <- exit_points[, list(PRICE_EXIT = max(PRICE_EXIT)), by ="PAIR"]
+exit_points <- exit_points[, list(PRICE_EXIT = min(PRICE_EXIT)), by ="PAIR"]
 # For the pairs that already have an open position then simply give the same exit points
 # the one is already there
 if(use_existing_price_levels){

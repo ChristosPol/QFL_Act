@@ -107,8 +107,22 @@ f[, current_eval := current_cost - cost_BUY_clean]
 f[, amount_to_target := target_profit - current_eval]
 View(f)
 print(pp)
+
+
+
+gg <- orders_upd1_closed[, list(pair = PAIR,
+  quote_res = current_cost - cost_BUY_clean,
+                               avg_per = result_per,
+                               current_cost = current_cost,
+                               cost_BUY_clean = cost_BUY_clean,
+                               target_sell = target_sell_clean,
+                               VOL= vol_exec_BUY)]
+
+
 # sum(f$target_sell)-sum(f$current_cost)
 # 
+# 
+# f <- f[PAIR != "KINUSD"]
 # library(RColorBrewer)
 # pdf(paste0("Alerts", "/open_orders.pdf"), onefile = TRUE)
 # pairs <- unique(f$PAIR)

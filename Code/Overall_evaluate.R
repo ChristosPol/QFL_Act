@@ -191,6 +191,7 @@ summary <- data.table(Column = c("Start", "End", "Initial funds available (USD)"
                      nrow(all_trades)/as.numeric(round(max(all_trades$closetm_SELL) - min(all_trades$closetm_SELL),0))))
 
 
+save(summary, file = "Data/evaluation/summary.rdata")
 # orders_upd1_closed[, sum(cost_BUY_clean), by = PAIR]
 # load("Data/evaluation/all_trades.rdata")
 save(all_trades, file = "Data/evaluation/all_trades.rdata")
