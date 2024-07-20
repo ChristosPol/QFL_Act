@@ -1,8 +1,8 @@
 # Trading platform QFL_DCA
 
 ![4%](https://progress-bar.dev/4/?scale=500)
-![4%](https://progress-bar.dev/420/?scale=500&title=funds&width=120&color=babaca&suffix=$)
-![img](https://progress-bar.dev/4/?scale=500)
+![4%](https://progress-bar.dev/420/?scale=1000&title=funds&width=120&color=babaca&suffix=$)
+![img](https://progress-bar.dev/4/?scale=500&width=500)
 ![Alt text](https://progress-bar.dev/4/?scale=500)
 
 ## Centralised exchange
