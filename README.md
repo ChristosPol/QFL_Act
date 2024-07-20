@@ -1,9 +1,9 @@
 # Trading platform QFL_DCA
 
-![4%](https://progress-bar.dev/4/?scale=500)
+
 ![4%](https://progress-bar.dev/420/?scale=1000&title=funds&width=120&color=babaca&suffix=$)
-![img](https://progress-bar.dev/4/?scale=500&width=500)
-![Alt text](https://progress-bar.dev/4/?scale=500)
+![img](https://progress-bar.dev/4/?scale=500&width=500&color=green)
+
 
 ## Centralised exchange
 [Kraken](https://www.kraken.com) is a United States–based cryptocurrency exchange, founded in 2011. It was one of the first bitcoin exchanges to be listed on Bloomberg Terminal and is reportedly valued at US$10.8 billion, as of mid-summer 2022.
