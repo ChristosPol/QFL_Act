@@ -1,7 +1,7 @@
 # Trading platform QFL_DCA
 
 
-![img](https://progress-bar.dev/4/?scale=500&title=RoadTo1E6&width=700)
+![img](https://progress-bar.dev/0.4/?scale=500&title=RoadTo1E6&width=850)
 
 
 ## Centralised exchange
