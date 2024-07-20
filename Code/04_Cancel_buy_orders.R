@@ -2,12 +2,12 @@
 rm(list = ls())
 
 # Source functions
-path_source <- "/Users/christos.polysopoulos/Repositories/QFL_Act/Source"
+path_source <- "/Users/christospolysopoulos/Repositories/Private/QFL_Act/Source"
 files.sources = list.files(path_source, full.names = T)
 invisible(sapply(files.sources, source))
 
 
-csv_path <- paste0("/Users/christos.polysopoulos/Repositories/QFL_Act/Data/trading_table.csv")
+csv_path <- paste0("/Users/christospolysopoulos/Repositories/Private/QFL_Act/Data/trading_table.csv")
 orders <- read_csv(csv_path,col_types = cols())
 
 
@@ -31,4 +31,4 @@ for(i in 1:nrow(orders)){
   }, error = function(e){
   })
 }
-fwrite(orders, file = paste0("/Users/christos.polysopoulos/Repositories/QFL_Act/Data/trading_table.csv"))
+fwrite(orders, file = paste0("/Users/christospolysopoulos/Repositories/Private/QFL_Act/Data/trading_table.csv"))

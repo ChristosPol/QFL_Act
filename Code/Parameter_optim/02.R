@@ -1,4 +1,4 @@
-pair <- "MNGOUSD"
+pair <- "ROOKUSD"
 # pair <- "SHIBEUR"
 # Path to save results
 data_path <- "Code/Parameter_optim/Data"
@@ -7,8 +7,8 @@ data_path <- "Code/Parameter_optim/Data"
 pair_data_results <- paste(data_path, pair, sep ="/")
 
 
-ticks <- c(60)
-units <- c(rep("minutes", 1))
+ticks <- c(5, 15, 60, 2, 6, 12, 24)
+units <- c(rep("minutes", 4),rep("hours", 3))
 intervals <- paste(ticks, units, sep = " ")
 
 
@@ -17,8 +17,28 @@ df <- trades_to_OHLC(pair = pair,
                      from_date = "2022-07-01",
                      to_date = "2023-07-01",
                      date_subset = F)
+test<- read_csv("/Users/christospolysopoulos/Repositories/Private/backtesting_module/data/XXBTZUSD/OHLC.csv")
+test <- df[[5]]
 
-min(df[[1]]$date)
+Calculate_spline <- function(x){
+  
+  smoothingSpline_fast = smooth.spline(x ~ as.numeric(1:length(x)) , spar = 0.9)
+  spline <- predict(smoothingSpline_fast)$y
+  deriv <- predict(smoothingSpline_fast, deriv = 1)$y
+  return(spline)
+}
+i <- 100
+for(i in 300:nrow(test)){
+  df <- test[200:i,]
+  spl <- Calculate_spline(df$close)
+  df$splines <- spl
+  
+  plot(df$close)
+  lines(df$splines, col = "red")
+  Sys.sleep(0.3)
+}
+Calculate_spline(test$close)
+
 
 
 df <- df[[1]]

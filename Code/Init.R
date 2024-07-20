@@ -11,4 +11,3 @@ source("code/X_EvaluateStrategy.R")
 source("code/current_status_open.R")
 
 budget <- current_avail_funds();budget
-

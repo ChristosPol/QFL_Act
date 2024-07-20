@@ -5,15 +5,15 @@ library(stringr)
 # print(paste0("#1 Script initiated at: ",Sys.time()))
 
 # Source functions
-path_source <- "/Users/christos.polysopoulos/Repositories/QFL_Act/Source"
+path_source <- "/Users/christospolysopoulos/Repositories/Private/QFL_Act/Source"
 files.sources = list.files(path_source, full.names = T)
 invisible(sapply(files.sources, source))
 
 
-coin_equity_previous <- read.csv(file= "/Users/christos.polysopoulos/Repositories/QFL_Act/Data/equity/coin_equity.csv")
+coin_equity_previous <- read.csv(file= "/Users/christospolysopoulos/Repositories/Private/QFL_Act/Data/equity/coin_equity.csv")
 coin_equity_previous$X <- NULL
 coin_equity_previous$date <- as.Date(coin_equity_previous$date)
-usd_equity_previous <- read.csv(file= "/Users/christos.polysopoulos/Repositories/QFL_Act/Data/equity/usd_equity.csv")
+usd_equity_previous <- read.csv(file= "/Users/christospolysopoulos/Repositories/Private/QFL_Act/Data/equity/usd_equity.csv")
 usd_equity_previous$X <- NULL
 usd_equity_previous$date <- as.Date(usd_equity_previous$date)
 usd_balance <- get_balance(url = "https://api.kraken.com/0/private/Balance",
@@ -34,12 +34,16 @@ all_pairs[, coin := gsub("ZUSD|USD", "", PAIR)]
 all_pairs[PAIR == "CHZUSD", coin := "CHZ"]
 all_pairs[coin == "BL", coin := "BLZ"]
 all_pairs <- all_pairs[!PAIR %in% c("TUSDUSD", "USDTZUSD")]
+all_pairs[coin == "XT", coin := "XTZ"]
+
 
 avail <- merge(avail, all_pairs, by = "coin", all.x = T)
 
 avail <- avail[!coin%in% avail$coin[grep("*\\.S", avail$coin)]]
 
-avail[coin %in% c("CHZ","KFEE", "USDT", "ZUSD"), PAIR:= c("CHZUSD","KFEE", "USDTZUSD", "ZUSD")]
+
+avail[coin %in% c("CHZ", "USDT", "ZUSD"), PAIR:= c("CHZUSD", "USDTZUSD", "ZUSD")]
+
 avail[coin == "XXDG", PAIR := "XDGUSD"]
 
 avail <- avail[coin != "PLA"]
@@ -48,7 +52,7 @@ tb <- jsonlite::fromJSON("https://api.kraken.com/0/public/Ticker")
 price_info <- data.table(PAIR = names(tb$result),
                          PRICE = as.numeric(lapply(lapply(tb$result, "[[", 3), "[", 1)))
 avail <- merge(avail, price_info, by = "PAIR", all.x = T)
-avail[coin %in% c("KFEE", "ZUSD"), PRICE:= c(0, 1)]
+avail[coin %in% c("ZUSD"), PRICE:= c(1)]
 avail[, equity := PRICE*V2]
 
 
@@ -72,11 +76,16 @@ ggplot(data=usd_equity, aes(x = date, y= equity))+
   geom_line(colour = "black")+
   geom_point(colour = "red")+
   theme_bw()
+ggplot(data=usd_equity[date>"2024-05-17"], aes(x = date, y= equity))+
+  geom_line(colour = "black")+
+  geom_point(colour = "red")+
+  theme_bw()
+
 print(usd_equity)
 setDT(coin_equity)
 coin_equity <- coin_equity[coin != "ZUSD"]
+# usd_equity <- usd_equity[date != "2024-07-16"]
 
-
-write.csv(coin_equity, file= "/Users/christos.polysopoulos/Repositories/QFL_Act/Data/equity/coin_equity.csv")
-write.csv(usd_equity, file= "/Users/christos.polysopoulos/Repositories/QFL_Act/Data/equity/usd_equity.csv")
+write.csv(coin_equity, file= "/Users/christospolysopoulos/Repositories/Private/QFL_Act/Data/equity/coin_equity.csv")
+write.csv(usd_equity, file= "/Users/christospolysopoulos/Repositories/Private/QFL_Act/Data/equity/usd_equity.csv")
 

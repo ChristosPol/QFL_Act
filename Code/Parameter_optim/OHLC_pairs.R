@@ -36,8 +36,5 @@ all_ohlc[candle == "red", wick_diff_per := round((wick_diff/close)*100, 3)]
 # table(all_ohlc$wick_diff_per>10)
 all_ohlc[wick_diff_per >=wick_dive, flag_enter := TRUE]
 all_ohlc[, vol_usd := volume*close]
-
 all_ohlc[flag_enter == T, .(pair, wick_diff_per)]
-
-
 nrow(all_ohlc[flag_enter== T])/nrow(all_ohlc)*100

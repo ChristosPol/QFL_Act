@@ -118,7 +118,19 @@ gg <- orders_upd1_closed[, list(pair = PAIR,
                                target_sell = target_sell_clean,
                                VOL= vol_exec_BUY)]
 
+gg[, total:=.N, by=pair]
+gg[quote_res<0, total_negative:=.N, by=pair]
 
+needs_hedge <- unique(gg[!is.na(total_negative), .(pair, total, total_negative)])
+needs_hedge[, negative_percent := total_negative/total*100]
+needs_hedge <- merge(needs_hedge, f[, .(PAIR, current_cost)], all.x =T, by.x = "pair", by.y = "PAIR")
+needs_hedge <- merge(needs_hedge, orders[STATUS_BUY=="OPEN", .(n_open=.N), by=PAIR], by.x="pair", by.y="PAIR", all.x=T)
+needs_hedge[is.na(n_open), n_open:=0]
+hedge_pairs <- needs_hedge[negative_percent ==100 & n_open ==0]
+setorder(hedge_pairs, -current_cost)
+
+
+save(hedge_pairs, file="Data/hedge_pairs.RData")
 # sum(f$target_sell)-sum(f$current_cost)
 # 
 # 

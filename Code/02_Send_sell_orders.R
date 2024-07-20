@@ -4,14 +4,17 @@ rm(list = ls())
 print(paste0("#1 Script initiated at: ",Sys.time()))
 
 # Source functions
-path_source <- "/Users/christos.polysopoulos/Repositories/QFL_Act/Source"
+path_source <- "/Users/christospolysopoulos/Repositories/Private/QFL_Act/Source"
 files.sources = list.files(path_source, full.names = T)
 invisible(sapply(files.sources, source))
 
 
-csv_path <- paste0("/Users/christos.polysopoulos/Repositories/QFL_Act/Data/trading_table.csv")
+csv_path <- paste0("/Users/christospolysopoulos/Repositories/Private/QFL_Act/Data/trading_table.csv")
 orders <- read_csv(csv_path,col_types = cols())
 print("#2 Order file loaded")
+
+
+
 
 load("trades/all_orders_cache.Rdata")
 
@@ -35,9 +38,8 @@ closed <- all_orders_cache[status == "closed"]
 key <- c("order_id", "opentm", "closetm", "vol", "vol_exec", "cost", "fee", "price")
 closed <- closed[, ..key]
 
-
 print(paste0("#8 Sending sell orders if buy order closed"))
-i <- 4845
+i <- 15221
 
 for(i in 1:nrow(orders)){
   # print(i)
@@ -48,9 +50,11 @@ for(i in 1:nrow(orders)){
     sell_it <- add_order(url = "https://api.kraken.com/0/private/AddOrder",
                         key = API_Key, secret = API_Sign, pair = orders$PAIR[i], type = "sell",
                         ordertype = "limit", volume = orders$VOL[i], price = orders$PRICE_EXIT[i])
+    print(sell_it)
     
     if(length(sell_it$error) ==1){
       orders$FAIL[i] <- sell_it$error
+      print(sell_it$error)
     } else {
       orders$ORDER_SELL_ID[i] <- sell_it$result$txid
       orders$STATUS_SELL[i] <- "OPEN"
@@ -65,6 +69,7 @@ for(i in 1:nrow(orders)){
   
 }
 # A third script "Close up all trades" that checks the status_sell
-fwrite(orders, file = paste0("/Users/christos.polysopoulos/Repositories/QFL_Act/Data/trading_table.csv"))
+fwrite(orders, file = paste0("/Users/christospolysopoulos/Repositories/Private/QFL_Act/Data/trading_table.csv"))
 
 print(paste0("Process finished at: ",Sys.time()))
+

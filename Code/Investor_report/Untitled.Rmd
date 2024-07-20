@@ -1,0 +1,219 @@
+---
+title: "Investor's report for Elena V"
+author: "Christos Polysopoulos"
+date: '2024-05-30'
+output: 
+  html_document:
+    toc: true # table of content true
+    toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
+    number_sections: false  ## if you want number sections at each table header
+    theme: united  # many options for theme, this one is my favorite.
+    highlight: tango  # specifies the syntax highlighting style
+    css: my.css   # you can add your custom css, should be in same folder
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Summary
+Period from 17th of May until 2nd of June has been quite underwhelming for crypto currency markets. Bitcoin is stuggling to surpass the psychological resistance level of 70'000 USD. This led to a bearish sentiment for big alt-coins and quite volatile movement of penny tokens.
+Luckily, after a number of successful high yield trades we managed to stay on the green side with approximately 3.3% returns for the portfolio.
+Open positions until now have set to close in the future with a 16.3% profit.
+
+## Investor's details
+```{r, echo =FALSE, warning=FALSE, message=FALSE}
+setwd("/Users/christospolysopoulos/Repositories/Private/QFL_Act/Code/Investor_report")
+library(kableExtra)
+library(data.table)
+library(ggplot2)
+library(ggdark)
+library(patchwork)
+investor_tab <- data.table(FirstName = c("Elena"),
+                           LastName = c("V"),
+                           Initials = c("EV"),
+                           StartingDate =as.Date(c("2024-05-17")),
+                           InitialFundsCHF = c(2000),
+                           ConvertedFundsUSD = c(2202.9590),
+                           ConversionFees = c(0),
+                           PriceFonversion = c("0.90787 CHF"),
+                           OrderID = c("OMHCLI-6RAMG-4VMGUG"),
+                           TradeID = c("TTZ7VW-3BNMP-2QLQZF"),
+                           PortfolioShare = "33.2%")
+kable(t(investor_tab), align = "l") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+## Portfolio performance
+
+```{r, echo =FALSE, warning=FALSE, message=FALSE, fig.height=10, fig.width=12}
+load(paste0("~/Repositories/Private/QFL_Act/Code/Investor_report", "/data/EV.Rdata"))
+load(paste0("~/Repositories/Private/QFL_Act/Code/Investor_report", "/data/market_cumulative_returns.Rdata"))
+load(paste0("~/Repositories/Private/QFL_Act/Code/Investor_report", "/data/closed_trades.Rdata"))
+load(paste0("~/Repositories/Private/QFL_Act/Code/Investor_report", "/data/daily_trading_sums.Rdata"))
+
+
+p1 <- ggplot(data=EV[values == "EV_equity"], aes(x= date, y = value))+
+  geom_hline(yintercept = first(EV[values == "EV_equity", value]), linetype="dashed")+
+  geom_hline(yintercept = last(EV[values == "EV_equity", value]), linetype="dashed")+
+  geom_line(colour = "grey", size =1)+
+  geom_point(colour="white",fill="darkgreen", size = 3,stroke = 0.5, shape =21)+
+  dark_theme_gray()+ylab("USD")+xlab("")+
+  ggtitle("Total Equity, EV")+
+  scale_x_date(date_labels="%d-%m-%Y",date_breaks  ="1 days")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  # theme(panel.grid.minor = element_blank())+
+  scale_y_continuous( limits = c(2150, 2290), breaks = seq(2150, 2290, 10))
+p1 <- p1 + annotate(x = EV[values == "EV_equity", last(date)], y = 2260, geom = "text", label = paste0("+", round(EV[values =="returns_percent_cumulative_EV", last(value)], 1) , "%\n","+", round(EV[values =="returns_USD_cumulative_EV", last(value)], 1), "USD"), colour="green")
+p1
+
+p2 <- ggplot(data=EV[values %in% c("returns_USD_EV")], aes(x= date, y = value))+
+  geom_hline(yintercept = 0, linetype="dashed")+
+  geom_bar(stat = "identity", fill = ifelse(EV[values %in% c("returns_USD_EV"), value]>0, "darkgreen", "tomato"))+
+  # facet_grid(~values)+
+  ggtitle("Daily P/L of equity in USD")+
+  dark_theme_gray()+ylab("USD")+xlab("")+
+  scale_x_date(date_labels="%d-%m-%Y",date_breaks  ="1 days")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  # theme(panel.grid.minor = element_blank())
+  scale_y_continuous( limits = c(-30, 80), breaks = seq(-30, 80, 5))
+
+
+p3 <- ggplot(data=EV[values %in% c("returns_USD_cumulative_EV")], aes(x= date, y = value))+
+  geom_line(colour = "grey", size =1)+
+  geom_point(colour="white",fill="darkgreen", size = 3,stroke = 0.5, shape =21)+
+  # facet_grid(~values)+
+  dark_theme_gray()+ylab("USD")+xlab("")+
+  ggtitle("Daily cumulative returns in USD")+
+  scale_x_date(date_labels="%d-%m-%Y",date_breaks  ="1 days")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  # theme(panel.grid.minor = element_blank())
+  scale_y_continuous( limits = c(-40, 85), breaks = seq(-40, 85, 5))
+
+
+p4 <- ggplot(data=EV[values %in% c("returns_percent_EV")], aes(x= date, y = value))+
+  geom_hline(yintercept = 0, linetype="dashed")+
+  geom_bar(stat = "identity", fill = ifelse(EV[values %in% c("returns_percent_EV"), value]>0, "darkgreen", "tomato"))+
+  # facet_grid(~values)+
+  dark_theme_gray()+ylab("USD")+xlab("")+
+  ggtitle("Daily P/L of equity in %")+
+  scale_x_date(date_labels="%d-%m-%Y",date_breaks  ="1 days")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+  # theme(panel.grid.minor = element_blank())
+
+
+p5 <- ggplot(data=EV[values %in% c("returns_percent_cumulative_EV")], aes(x= date, y = value))+
+  geom_line(colour = "grey", size =1)+
+  geom_point(colour="white",fill="darkgreen", size = 3,stroke = 0.5, shape =21)+
+  # facet_grid(~values)+
+  dark_theme_gray()+ylab("USD")+xlab("")+
+  ggtitle("Daily cumulative returns in %")+
+  scale_x_date(date_labels="%d-%m-%Y",date_breaks  ="1 days")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+(p2+p3)/(p4+p5)
+
+```
+
+```{r, echo =FALSE, warning=FALSE, message=FALSE, fig.height=10, fig.width=12}
+EV_cumsum <- EV[values == "returns_percent_cumulative_EV"]
+EV_cumsum[, values:= NULL]
+EV_cumsum[, PAIR := "EV Investment"]
+setnames(EV_cumsum, c("date", "value"), c("Date_POSIXct", "cum_diff_per"))
+
+EV_cumsum <- rbind(EV_cumsum, market_cumulative_returns)
+
+EV_cumsum <- EV_cumsum
+
+pp <- sort(EV_cumsum[Date_POSIXct == "2024-06-05", cum_diff_per])
+percentile <- ecdf(pp)
+
+
+ggplot(data = EV_cumsum, aes(x = Date_POSIXct, y = cum_diff_per, colour = PAIR))+
+  geom_line(alpha = 0.1)+
+  geom_line(data=EV_cumsum[PAIR == "EV Investment"],  aes(x = Date_POSIXct, y = cum_diff_per), colour = "green")+
+  geom_hline(yintercept = 0, size = 0.1, colour = "white")+
+  dark_theme_gray()+
+  coord_cartesian(ylim = c(-30, 30))+
+  ylab("Percentage cumulative returns")+
+  xlab("Date")+
+  ggtitle(paste0("EV's returns vs market, currently at ", round((1-percentile(3.3))*100, 1), "% top percentile"))+
+  scale_x_date(date_labels="%d-%m-%Y",date_breaks  ="1 day")+
+  theme(legend.position = "none")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+```
+
+```{r,echo=FALSE}
+EV_cumsum_tab <- EV_cumsum[Date_POSIXct == "2024-06-05",]
+EV_cumsum_tab[, cum_diff_per:= round(cum_diff_per, 1)]
+setorder(EV_cumsum_tab, -cum_diff_per)
+setnames(EV_cumsum_tab, c("Date_POSIXct", "cum_diff_per", "PAIR"), c("End date of period", "Cumulative percentage returns", "Asset"))
+kable(EV_cumsum_tab, align = "c") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))%>%
+  row_spec(which(EV_cumsum_tab$Asset == "EV Investment"), bold = T, color = "white", background = "darkgreen")
+
+
+```
+## Trading performance
+```{r,echo =FALSE}
+closed_trades <- closed_trades[closetm_SELL >="2024-05-18"]
+trading_tab <- data.table(
+  type = c("Number of trades",
+           "Wins",
+           "Losses",
+           "Win ratio",
+           "Average win %",
+           "Average loss %",
+           "Days trading",
+           "Average trades per day"),
+  values =c(length(closed_trades$quote_result_clean),
+            length(closed_trades$quote_result_clean[closed_trades$quote_result_clean>0]),
+            length(closed_trades$quote_result_clean[closed_trades$quote_result_clean<0]),
+            length(closed_trades$quote_result_clean[closed_trades$quote_result_clean>0])/length(closed_trades$quote_result_clean)*100,
+            mean(closed_trades$percent_result_clean[closed_trades$percent_result_clean>0]),
+            mean(closed_trades$percent_result_clean[closed_trades$percent_result_clean<0]),
+            as.Date("2024-06-02")-as.Date("2024-05-18"),
+            length(closed_trades$quote_result_clean)/(as.numeric(as.Date("2024-06-05")-as.Date("2024-05-18")))))
+trading_tab[, values:= round(values, 1)]
+# colnames(trading_tab) <- NULL
+
+kable(trading_tab, align = "c") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+
+```
+
+```{r, echo =FALSE, warning=FALSE, message=FALSE,  fig.height=10, fig.width=12}
+daily_trading_sums <- unique(daily_trading_sums[, .(closetm_SELL, daily_sum)])
+daily_trading_sums <- merge(daily_trading_sums, EV[values == "EV_equity"], by.x ="closetm_SELL", by.y = "date", all.x =T)
+daily_trading_sums <- daily_trading_sums[!is.na(values)]
+daily_trading_sums <- daily_trading_sums[closetm_SELL!="2024-05-17"]
+daily_trading_sums[, daily_sum_EV:= 0.332*daily_sum]
+daily_trading_sums[, percent_returns := round(daily_sum_EV / value*100, 3)]
+
+
+pp <- ggplot(data = daily_trading_sums, aes(x = closetm_SELL, y = percent_returns))+
+  geom_point(colour = "green")+
+  geom_smooth(span = 1, se = F)+
+  dark_theme_gray()+
+  ylab("Percentage of total EV's portfolio")+
+  xlab("Date")+
+  ggtitle("Daily returns in percentage and USD of succesfully closed positions")+
+  scale_x_date(date_labels="%d-%m-%Y",date_breaks  ="1 day")+
+  theme(legend.position = "none")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+  
+pp1 <- ggplot(data = daily_trading_sums, aes(x = closetm_SELL, y = daily_sum_EV))+
+  geom_bar(fill="darkgreen",colour = "green", stat = "identity")+
+  geom_smooth(span = 1, se = F)+
+  dark_theme_gray()+
+  ylab("Daily returns in USD towards EV's portfolio")+
+  xlab("Date")+
+  scale_x_date(date_labels="%d-%m-%Y",date_breaks  ="1 day")+
+  theme(legend.position = "none")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+pp/pp1
+```
+

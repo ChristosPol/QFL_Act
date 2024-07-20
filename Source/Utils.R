@@ -41,7 +41,7 @@ setDTthreads(1)
 options(stringsAsFactors = FALSE)
 
 # API info
-api_info <- read.table(paste0("/Users/christos.polysopoulos/Repositories/", "API_Keys.txt"),
+api_info <- read.table(paste0("/Users/christospolysopoulos/Repositories/Private/", "API_Keys.txt"),
                        sep = ";", header = T)
 API_Key <- as.character(api_info$API_Key)
 API_Sign <- as.character(api_info$API_Sign)
@@ -651,5 +651,16 @@ trades_evaluation_withTrail <- function(){
     }
   }
   
+}
+
+
+# Compound returns formula
+# P initial balance
+# r Percentage returns
+# n number of times interest applied per Year
+# t number of time periods elapsed
+compound_returns <- function(P, r, n, t){
+  A = P*(1 + (r/n) )**(n*t)
+  return(A)
 }
 

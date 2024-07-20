@@ -3,20 +3,27 @@ rm(list = ls())
 path_source <- "Source"
 files.sources = list.files(path_source, full.names = T)
 sapply(files.sources, source)
-interval <- 60
+
+interval <- 60 # Fixed for now
 budget <- current_avail_funds();budget
-n_pairs_avail <- round(budget/40);n_pairs_avail
+n_pairs_avail <- round(budget/40);n_pairs_avail # indicative
 minimum <- T
-use_existing_price_levels <- F
-each_usd <- 5
-n_orders <- 8 
-grid <- c(0.025,0.05,0.075,0.1, 0.125, 0.15, 0.2, 0.25)
+use_existing_price_levels <- T
+
+each_usd <- 5 # variable 
+n_orders <- 8 # variable
+grid <- c(0.025,0.05,0.075,0.1, 0.125, 0.15, 0.2, 0.25)# variable
+
+n_orders <- 1# variable
+grid <- c(0.025)# variable
+
+action <- "hedge"# variable
 csv_path <- paste0("Data/trading_table.csv")
 orders <- fread(csv_path)
 open_orders <- orders[STATUS_SELL == "OPEN"]
-possible_enter <- orders[STATUS_BUY == "OPEN"][, .N, by= PAIR]
-setorder(possible_enter, N)
-pairs <- possible_enter[1:n_pairs_avail, ]
+
+open_orders <- orders[STATUS_SELL == "OPEN"]
+load("Data/hedge_pairs.RData")
 
 # ------------------------------------------------------------------------------
 # Get all pairs
@@ -62,22 +69,21 @@ setnames(minimums_calculated, "PAIR", "COIN")
 minimums_calculated$DECIMALS <- unlist(minimums_calculated$DECIMALS)
 minimums_calculated$MIN <- unlist(minimums_calculated$MIN)
 
-fwrite(minimums_calculated, file = paste0("/Users/christos.polysopoulos/Repositories/QFL_Act/Data/minimums_calculated.csv"))
+fwrite(minimums_calculated, file = paste0("/Users/christospolysopoulos/Repositories/Private/QFL_Act/Data/minimums_calculated.csv"))
 
 
-# rand <- sample(unique(all_pairs$PAIR), n_pairs_avail)
-rand1 <- c( "ACAUSD",  "ACHUSD"  ,"ALGOUSD"  , "ALPHAUSD"  , "ANKRUSD"   ,"ANTUSD"  , "API3USD",   "APTUSD",  
-            "AUDIOUSD"  , "BANDUSD",  "BEAMUSD", "BLURUSD",   "BOBAUSD"  , "BONKUSD",   "BSXUSD",   "CELRUSD",  
-            "CFGUSD",   "COTIUSD",   "CRVUSD",   "DENTUSD"  , "DYDXUSD" , "EGLDUSD",  "EULUSD" , "FARMUSD", 
-            "FETUSD",  "FIDAUSD",   "FXSUSD" , "GALAUSD"  , "GARIUSD" , "GLMRUSD",  "HDXUSD",  "ICPUSD", 
-            "KILTUSD" , "KINTUSD",   "LCXUSD" , "LRCUSD",  "LSKUSD"  ,"MANAUSD",  "OCEANUSD"  ,"ONDOUSD"  ,
-            "OPUSD"  , "RARIUSD" ,"RPLUSD",  "SAMOUSD",  "SBRUSD"  , "SCRTUSD",  "SPELLUSD", "STRKUSD",  
-            "TEERUSD", "TLMUSD", "TOKEUSD" )
+if(action =="random"){
+  rand <- sample(unique(all_pairs$PAIR), n_pairs_avail)
+  print("Random selection of pairs")
+} else if(action =="selection"){
+  rand <- c( "SPELLUSD","KILTUSD","ICPUSD","CTSIUSD")  
+  print("Manual selection of pairs")
+} else{
+  rand <- hedge_pairs[1:64, pair]
+  print("Selection to minimize further risks")
+}
 
-# rand <- pairs$PAIR
-# rand1 <- pairs$PAIR
-# rand <- rand[!rand %in%rand1]
-all_pairs <- all_pairs[PAIR %in% rand1]
+all_pairs <- all_pairs[PAIR %in% rand]
 
 
 trading_table <- data.frame(PAIR = rep(all_pairs$PAIR, each = n_orders),
@@ -85,7 +91,7 @@ trading_table <- data.frame(PAIR = rep(all_pairs$PAIR, each = n_orders),
                             DECIMAL= unlist(rep(all_pairs$DECIMALS, each = n_orders)))
 pairs <- unique(trading_table$PAIR)
 
-i <- 110
+i <- 40
 supports <- list()
 for (i in 1:length(pairs)){
   msg <- tryCatch({
@@ -116,11 +122,21 @@ for (i in 1:length(pairs)){
   })
   
   SP <- SP[SP<tail(df$close, 1)]
+  # ggplot(data=df, aes(x = time, y = close, group=1))+
+  # geom_line()+
+  # geom_hline(yintercept = SP)  
+  
   needed <- n_orders-length(SP)
+  
   
   if(needed == n_orders){
     grid_set <- tail(df$close, 1) - tail(df$close, 1)*grid
     SP <- grid_set
+  } else if (needed < 0){
+      SP <- SP[1:length(grid)]
+      
+  } else if (needed == 0 ){
+    SP <- SP
   } else{
     lowest <- min(SP)
     grid_selected <- grid[1:needed]
@@ -131,14 +147,16 @@ for (i in 1:length(pairs)){
   print(paste0("Pair ", pairs[i], " needed ", needed, " orders" ))
   # print(paste0("Sharpe Ratio for: ",  EUR_pairs[i]," ", round(unique(df$sharpe), 4))) 
   Sys.sleep(1.2)
+  
   supports[[i]] <- sort(SP, decreasing = T)
 }
 
-idx_rem <- which(unlist(lapply(supports, length))<8)
-pairs_rem <- pairs[which(unlist(lapply(supports, length))<8)]
+idx_rem <- which(unlist(lapply(supports, length))<n_orders)
+pairs_rem <- pairs[which(unlist(lapply(supports, length))<n_orders)]
 if(length(idx_rem) > 0) {
   supports <- supports[-idx_rem]   
 }
+
 
 setDT(trading_table)
 trading_table <- trading_table[!PAIR %in% pairs_rem]
@@ -180,7 +198,6 @@ trading_table[, PRICE_EXIT := round(PRICE_EXIT, DECIMAL)]
 trading_table[, DECIMAL := NULL]
 trading_table[, BET_ENTER := as.numeric(VOL)*PRICE_ENTER]
 
-
 cumul <- trading_table[, list(SUM_BET = sum(BET_ENTER)), by = PAIR]
 setorder(cumul, SUM_BET)# maybe change this
 cumul[, CUM_BET := cumsum(SUM_BET)]
@@ -194,6 +211,6 @@ trading_table$DECIMALS <- NULL
 trading_table$MIN <- NULL
 
 
-fwrite(trading_table, file = paste0("/Users/christos.polysopoulos/Repositories/QFL_Act/Data/trading_table_BIND.csv"))
+fwrite(trading_table, file = paste0("/Users/christospolysopoulos/Repositories/Private/QFL_Act/Data/trading_table_BIND.csv"))
 
 

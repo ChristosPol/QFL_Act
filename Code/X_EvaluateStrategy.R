@@ -121,13 +121,13 @@ orders_upd1_closed[, cost_SELL_clean := cost_SELL - fee_SELL]
 orders_upd1_closed[, quote_result_clean := cost_SELL_clean - cost_BUY_clean]
 orders_upd1_closed[, percent_result_clean := ((cost_SELL_clean - cost_BUY_clean)/cost_BUY_clean) *100]
 
-
+closed_trades <- copy(orders_upd1_closed)
+save(closed_trades, file=paste0(getwd(), "/code/Investor_report/data/closed_trades.Rdata"))
 
 eq <- copy(orders_upd1_closed)
 eq <- eq[!is.na(percent_result_clean)]
 eq[, closetm_SELL := substr(closetm_SELL, 1, 10)]
 eq[, closetm_SELL := as.Date(closetm_SELL)]
-
 
 wins_overall <- eq[, list(sum_risked=sum(cost_BUY_clean),sum_earned=sum(quote_result_clean) )]
 wins_overall[, percent := sum_earned/sum_risked*100]
@@ -142,102 +142,16 @@ wins_all[, average_win_USD := round(sum_earned_USD/n_trades,2)]
 setorder(wins_all,closetm_SELL)
 round(sum(wins_all$sum_risked_USD),1)
 
-# p1 <- ggplot(data=wins_all, aes(x= closetm_SELL, y = sum_risked_USD))+
-#   geom_line(colour = "green")+
-#   geom_point(colour = "green")+
-#   dark_theme_gray()+ylab("Amount risked in USD")+xlab("")+
-#   ggtitle(paste0("Total risked amount in USD:", round(sum(wins_all$sum_risked_USD),2)))+
-#   scale_x_date(date_labels="%d-%m-%Y",date_breaks  ="1 day")+
-#   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
-#   # theme(axis.text.x = element_blank())+
-#   theme(panel.grid.minor = element_blank())
-# p1
-# # 
-# p2 <- ggplot(data=wins_all, aes(x= closetm_SELL, y = percent_earned))+
-#   geom_line(colour = "green")+
-#   geom_point(colour = "green")+
-#   dark_theme_gray()+ylab("Percent earned from risked amount")+xlab("")+
-#   ggtitle(paste0("Total risked amount in USD:", round(sum(wins_all$sum_risked_USD),2)))+
-#   scale_x_date(date_labels="%d-%m-%Y",date_breaks  ="1 day")+
-#   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
-#   # theme(axis.text.x = element_blank())+
-#   theme(panel.grid.minor = element_blank())
-# p2
-# # 
-# p3 <- ggplot(data=wins_all, aes(x= closetm_SELL, y = sum_risked_USD))+
-#   geom_line(colour = "green")+
-#   geom_point(colour = "green")+
-#   dark_theme_gray()+ylab("Amount risked in USD(green)\n Percent earned (white)")+xlab("")+
-#   ggtitle(paste0("Total risked amount in USD:", round(sum(wins_all$sum_risked_USD),2)))+
-#   scale_x_date(date_labels="%d-%m-%Y",date_breaks  ="1 day")+
-#   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
-#   # theme(axis.text.x = element_blank())+
-#   theme(panel.grid.minor = element_blank())+
-#   geom_line(aes(x= closetm_SELL, y = percent_earned))+
-#   scale_y_continuous(breaks = round(seq(0, max(wins_all$sum_risked_USD), by = 5)))
-# p3
-# # 
-# risked <- wins_all[, .(closetm_SELL, sum_risked_USD)]
-# risked[, flag:="risked"]
-# colnames(risked)[2] <- "sum"
-# earned <- wins_all[, .(closetm_SELL, sum_earned_USD)]
-# earned[, flag:="earned"]
-# colnames(earned)[2] <- "sum"
-# risked_earned <- rbind(risked, earned)
-# risked_earned[, Per:=round(sum[flag=="earned"]/sum[flag=="risked"]*100,2), by = closetm_SELL]
-# risked_earned[flag == "risked", Per := 100-Per]
-# risked_earned[,closetm_SELL := as.Date(closetm_SELL)]
-# 
-# p4 <- ggplot(risked_earned, aes(x = closetm_SELL, y = sum, fill = flag)) +
-#   geom_col()+dark_theme_gray()+ylab("")+
-#   ggtitle("Risked vs Earned in USD")+
-#   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
-#   theme(panel.grid.minor = element_blank())+
-#   theme(legend.position = "bottom")+
-#   scale_y_continuous(breaks = round(seq(0, 100, by = 10)))+
-#   scale_x_date(date_labels="%d-%m-%Y",date_breaks  ="1 day")
-# p4
-# # 
-# p5 <- ggplot(risked_earned, aes(x = closetm_SELL, y = Per, fill = flag)) +
-#   geom_col()+dark_theme_gray()+ylab("")+
-#   ggtitle("Risked vs Earned in %")+
-#   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
-#   theme(panel.grid.minor = element_blank())+
-#   theme(legend.position = "bottom")+
-#   scale_y_continuous(breaks = round(seq(0, 100, by = 10)))+
-#   scale_x_date(date_labels="%d-%m-%Y",date_breaks  ="1 day")
-# p5
-# 
-# 
-# 
 
 wins_only_pair <- eq[, list(returns_quote=round(sum(quote_result_clean), 3),
                             bet_quote = round(sum(cost_BUY_clean), 3)), by = c("PAIR")]
 wins_only_pair[, returns_per := round(returns_quote/bet_quote*100, 2)]
-# wins_only_pair[, average_win_USD := round(sum_earned_USD/n_trades,2)]
-# setorder(wins_only_pair,-percent_earned)
-# 
-# p6 <- ggplot(wins_only_pair, aes(x = reorder(PAIR, -returns_per), y = returns_per)) +
-#   geom_col(colour = "green")+dark_theme_gray()+ylab("")+
-#   ggtitle("Risked vs Earned in %")+
-#   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
-#   #theme(panel.grid.minor = element_blank())+
-#   theme(legend.position = "bottom")
-# p6
-# p111<- ggplot(data = wins_only_pair, aes(x= returns_quote,
-#                                   y=returns_per))+
-#   geom_label(aes(label = PAIR), colour = 'green')+
-#   # geom_point(colour = "green")+
-#   dark_theme_gray()+
-#   geom_hline(yintercept = max(wins_only_pair$returns_per)/2)+
-#   geom_vline(xintercept = max(wins_only_pair$returns_quote)/2)
-# 
-# print(p111)
 quote_equity <- eq[,.(PAIR, closetm_SELL,cost_BUY_clean, quote_result_clean)]
 quote_equity <- quote_equity[, .(quote_result_clean = sum(quote_result_clean),
                                  quote_per_clean = sum(quote_result_clean)/sum(cost_BUY_clean)
                                  ), by = closetm_SELL]
-# > DT[,.(V4.Sum=sum(V4)), by=.(V1,V2)] 
+
+
 colnames(quote_equity)[2] <- "quote_result_clean"
 setorder(quote_equity,closetm_SELL)
 quote_equity[, cumul := cumsum(quote_result_clean)]
@@ -260,104 +174,6 @@ print(wins_overall)
 print(round(wins_overall$sum_earned/init*100,2))
 print(tail(quote_equity,6))
 
-
-# save(quote_equity, file ="quote_equity.rdata")
-# eq_per <- copy(orders_upd1_closed)
-# eq_per[, closetm_SELL := substr(closetm_SELL, 1, 10)]
-# eq_per[, closetm_SELL := as.Date(closetm_SELL)]
-# eq_per <- eq_per[,.(PAIR, closetm_SELL, cost_BUY_clean, quote_result_clean)]
-# eq_per <- eq_per[, list(quote = sum(quote_result_clean), bet = sum(cost_BUY_clean)), by = closetm_SELL]
-# setorder(eq_per,closetm_SELL)
-# eq_per[, cumul_result := cumsum(quote)]
-# eq_per[, cumul_bet := cumsum(bet)]
-# eq_per[, per_res :=  (cumul_result/cumul_bet)*100]
-# 
-# p2 <- ggplot(data=eq_per, aes(x= closetm_SELL, y = per_res))+
-#   geom_line(colour = "green")+
-#   geom_point(colour = "green")+
-#   dark_theme_gray()+ylab("Daily % ")+xlab("")+
-#   ggtitle("Win/Bet percentage")+
-#   scale_x_date(date_labels="%d-%m-%Y",date_breaks  ="1 day")+
-#   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
-#   theme(axis.text.x = element_blank())+
-#   theme(panel.grid.minor = element_blank())+
-#   scale_y_continuous(breaks = round(seq(0, max(eq_per$per_res), by = 0.1)))
-# p2
-# 
-# # Number of trades
-# ntrades <- copy(orders_upd1_closed)
-# ntrades[, closetm_SELL := substr(closetm_SELL, 1, 10)]
-# ntrades[, closetm_SELL := as.Date(closetm_SELL)]
-# ntrades <- ntrades[,.(PAIR, closetm_SELL)]
-# ntrades <- ntrades[, list(ntrades=.N), by = closetm_SELL]
-# setorder(ntrades,closetm_SELL)
-# ntrades <- ntrades[, list(ntrades = sum(ntrades)), by = closetm_SELL]
-# 
-# p3 <- ggplot(data=ntrades, aes(x= closetm_SELL, y = ntrades))+
-#   geom_line(colour = "green")+
-#   geom_point(colour = "green")+
-#   dark_theme_gray()+ylab("Daily #")+xlab("Date")+
-#   ggtitle("Number of trades")+
-#   scale_x_date(date_labels="%d-%m-%Y",date_breaks  ="1 day")+
-#   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
-#   theme(panel.grid.minor = element_blank())
-# 
-# 
-# 
-# duration <- copy(orders_upd1_closed)
-# duration[, closetm_SELL := substr(closetm_SELL, 1, 10)]
-# duration[, closetm_SELL := as.Date(closetm_SELL)]
-# duration[, closetm_BUY := substr(closetm_BUY, 1, 10)]
-# duration[, closetm_BUY := as.Date(closetm_BUY)]
-# 
-# duration <- duration[,.(PAIR, closetm_BUY,closetm_SELL)]
-# duration <- duration[, mean(closetm_SELL-closetm_BUY), by = PAIR]
-# setorder(duration,-V1)
-# 
-# duration$PAIR <- factor(duration$PAIR, levels = duration$PAIR)
-# 
-# p4 <- ggplot(data=duration, aes(x =PAIR, y = V1 ))+
-#   geom_col(colour = "yellow", fill = "darkgreen")+
-#   dark_theme_gray()+
-#   ylab("Days")+xlab("Pair")+
-#   ggtitle("Average duration of a trade by pair")+
-#   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
-#   theme(panel.grid.minor = element_blank())+
-#   geom_hline(yintercept = mean(duration$V1), colour = "red")
-# 
-# # Number of trades
-# ntrades <- copy(orders_upd1_closed)
-# ntrades[, closetm_SELL := substr(closetm_SELL, 1, 10)]
-# ntrades[, closetm_SELL := as.Date(closetm_SELL)]
-# ntrades <- ntrades[,.(PAIR, closetm_SELL)]
-# ntrades <- ntrades[, list(ntrades=.N), by = PAIR]
-# setorder(ntrades,-ntrades)
-# 
-# ntrades$PAIR <- factor(ntrades$PAIR, levels = ntrades$PAIR)
-# 
-# p5 <- ggplot(data=ntrades, aes(x =PAIR, y = ntrades ))+
-#   geom_col(colour = "yellow", fill = "darkgreen")+
-#   dark_theme_gray()+
-#   ylab("# trades")+xlab("Pair")+
-#   ggtitle("Total number of trades by pair")+
-#   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
-#   theme(panel.grid.minor = element_blank())+
-#   geom_hline(yintercept = mean(ntrades$ntrades), colour = "red")
-# 
-# 
-# p6 <- ggarrange(p1, p2, p3, nrow= 3)
-# p6
-# # p6
-# p7 <- ggarrange(p4, p5, nrow= 2)
-# ggarrange(p6,p7, ncol = 2)
-# 
-# 
-# # 
-# crypto_holdings <- orders_upd1[STATUS_BUY == "CLOSED" & STATUS_SELL != "CLOSED"]
-# crypto_holdings[, vol_exec_BUY:= as.numeric(vol_exec_BUY)]
-# View(crypto_holdings[, sum(vol_exec_BUY), by = PAIR])
-#
-# 
 tmp <- copy(orders_upd1_closed)
 tmp[, closetm_SELL := as.Date(substr(closetm_SELL, 1, 10))]
 print("some trades did closed properly")
@@ -368,14 +184,13 @@ tmp <- tmp[, sum(quote_result_clean), by = c("closetm_SELL", "PAIR")]
 setorder(tmp, -closetm_SELL, -V1)
 tmp[, daily_sum := sum(V1), by = closetm_SELL]
 
+daily_trading_sums <- copy(tmp)
+save(daily_trading_sums, file=paste0(getwd(), "/code/Investor_report/data/daily_trading_sums.Rdata"))
+
 # Not properly closed
 
 
 
-# pp<-ggplot(data = unique(tmp[, .(closetm_SELL, daily_sum)]), aes(x = closetm_SELL, y = daily_sum))+
-#   geom_bar(stat = "identity", colour = "black")+
-#   geom_hline(yintercept = unique(tmp[, .(closetm_SELL, daily_sum)])[, mean(daily_sum)], colour = "red")
-# print(pp)
 dat <- unique(tmp[, .(closetm_SELL, daily_sum)])
 setorder(dat, closetm_SELL)
 dat$ema_10 <- EMA(dat$daily_sum, 30)
@@ -389,15 +204,3 @@ pp<- ggplot(data = dat, aes(x = closetm_SELL, y = daily_sum))+
 print(pp)
 View(tmp)
 
-# 
-# dat[, cumsum := cumsum(daily_sum)]
-# ggplot(data = dat, aes(x = cumsum, y = daily_sum))+
-#   geom_line(colour = "black")+
-#   geom_smooth(method = "lm")
-# fit <- lm(daily_sum~cumsum, data =dat)
-# newdata = data.frame(cumsum = seq(1200, 5000, by= 50))
-# dat1 <- rbind(dat, data.frame(cumsum=newdata,  daily_sum = predict(fit, newdata = newdata)), fill =T)
-# 
-# ggplot(data = dat1, aes(x = cumsum, y = daily_sum))+
-#   geom_point(colour = "black")+
-#   geom_smooth(method = "lm")
