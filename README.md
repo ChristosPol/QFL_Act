@@ -1,9 +1,6 @@
 # Trading platform QFL_DCA
 
 
-![img](https://progress-bar.dev/4/?scale=500&title=RoadTo1E5&width=850)
-
-
 ## Centralised exchange
 [Kraken](https://www.kraken.com) is a United States–based cryptocurrency exchange, founded in 2011. It was one of the first bitcoin exchanges to be listed on Bloomberg Terminal and is reportedly valued at US$10.8 billion, as of mid-summer 2022.
 Kraken is hosting a [REST API](https://docs.kraken.com/rest/) that is organised into publicly accessible endpoints (market data, exchange status, etc.), and private authenticated endpoints (trading, funding, user data) which require requests to be signed.
