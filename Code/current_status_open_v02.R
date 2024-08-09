@@ -31,29 +31,6 @@ df <- all_orders_cache[status == "closed"]
 key <- c("order_id", "opentm", "closetm", "vol", "vol_exec", "cost", "fee", "price")
 df <- df[, ..key]
 
-# i <- 1
-# trades_raw <- list()
-# namen <- list()
-# dfs <- list()
-# while (offset <= 1000) {
-#    
-#   trades_raw[[i]] <- get_trade_history(url, key, secret, offset)
-#   trades_raw <- lapply(trades_raw[[i]]$result$closed, function(x){x$descr <- NULL;x})
-#   namen[[i]] <- names(trades_raw)
-#   dfs[[i]] <- rbindlist(trades_raw, fill = T)
-#   offset <- offset + 50
-#   i <- i +1  
-#   Sys.sleep(3)
-#   print(offset)
-# }
-
-# df <- rbindlist(dfs, fill =T)
-# df[, ids := unlist(namen)]
-# df <- df[status == "closed"]
-# key <- c("ids", "opentm", "closetm", "vol", "vol_exec", "cost", "fee", "price")
-# df <- df[, .(ids, opentm, closetm, vol, vol_exec, cost, fee, price)]
-# df <- rbind(df_hist, df[ids %in% df$ids[!df$ids %in% df_hist$ids],])
-# save(df, file ="trades/trades.Rdata")
 
 
 df_original <- copy(df)

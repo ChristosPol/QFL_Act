@@ -15,7 +15,6 @@ for(i in 1:nrow(orders)){
       buy_it <- add_order(url = "https://api.kraken.com/0/private/AddOrder",
                           key = API_Key, secret = API_Sign, pair = orders$PAIR[i], type = "buy",
                           ordertype = "limit", volume = orders$VOL[i], price = orders$PRICE_ENTER[i])
-      
       if(length(buy_it$error) ==1){
         orders$FAIL[i] <- buy_it$error
       } else {
@@ -23,7 +22,6 @@ for(i in 1:nrow(orders)){
         orders$STATUS_BUY[i] <- "OPEN"
       }
       print(buy_it)
-      
       Sys.sleep(3)  
   }
   }, error = function(e){

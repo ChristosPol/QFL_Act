@@ -14,10 +14,10 @@ each_usd <- 5 # variable
 n_orders <- 8 # variable
 grid <- c(0.025,0.05,0.075,0.1, 0.125, 0.15, 0.2, 0.25)# variable
 
-n_orders <- 1# variable
-grid <- c(0.025)# variable
+n_orders <- 3# variable
+grid <- c(0.025, 0.05, 0.1)# variable
 
-action <- "hedge"# variable
+action <- "selection"# variable
 csv_path <- paste0("Data/trading_table.csv")
 orders <- fread(csv_path)
 open_orders <- orders[STATUS_SELL == "OPEN"]
@@ -76,10 +76,10 @@ if(action =="random"){
   rand <- sample(unique(all_pairs$PAIR), n_pairs_avail)
   print("Random selection of pairs")
 } else if(action =="selection"){
-  rand <- c( "SPELLUSD","KILTUSD","ICPUSD","CTSIUSD")  
+  rand <- c( "POLUSD")  
   print("Manual selection of pairs")
 } else{
-  rand <- hedge_pairs[1:64, pair]
+  rand <- hedge_pairs[1:11, pair]
   print("Selection to minimize further risks")
 }
 
@@ -91,7 +91,7 @@ trading_table <- data.frame(PAIR = rep(all_pairs$PAIR, each = n_orders),
                             DECIMAL= unlist(rep(all_pairs$DECIMALS, each = n_orders)))
 pairs <- unique(trading_table$PAIR)
 
-i <- 40
+i <- 1
 supports <- list()
 for (i in 1:length(pairs)){
   msg <- tryCatch({

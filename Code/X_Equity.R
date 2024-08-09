@@ -9,7 +9,6 @@ path_source <- "/Users/christospolysopoulos/Repositories/Private/QFL_Act/Source"
 files.sources = list.files(path_source, full.names = T)
 invisible(sapply(files.sources, source))
 
-
 coin_equity_previous <- read.csv(file= "/Users/christospolysopoulos/Repositories/Private/QFL_Act/Data/equity/coin_equity.csv")
 coin_equity_previous$X <- NULL
 coin_equity_previous$date <- as.Date(coin_equity_previous$date)
