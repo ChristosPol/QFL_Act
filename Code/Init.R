@@ -3,7 +3,8 @@ source("code/X_Grid_Alert.R")
 
 # Close trades
 source("code/03_Close_trades.R")
-
+ 
+gc()
 # Evaluate current trading session
 source("code/X_EvaluateStrategy.R")
 

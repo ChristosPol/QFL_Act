@@ -1,4 +1,4 @@
-pair <- "ROOKUSD"
+pair <- "BTCUSD"
 # pair <- "SHIBEUR"
 # Path to save results
 data_path <- "Code/Parameter_optim/Data"
@@ -7,15 +7,15 @@ data_path <- "Code/Parameter_optim/Data"
 pair_data_results <- paste(data_path, pair, sep ="/")
 
 
-ticks <- c(5, 15, 60, 2, 6, 12, 24)
-units <- c(rep("minutes", 4),rep("hours", 3))
+ticks <- c(60)
+units <- c("minutes")
 intervals <- paste(ticks, units, sep = " ")
 
 
 df <- trades_to_OHLC(pair = pair,
                      interval = intervals,
-                     from_date = "2022-07-01",
-                     to_date = "2023-07-01",
+                     #from_date = "2022-07-01",
+                     #to_date = "2023-07-01",
                      date_subset = F)
 test<- read_csv("/Users/christospolysopoulos/Repositories/Private/backtesting_module/data/XXBTZUSD/OHLC.csv")
 test <- df[[5]]

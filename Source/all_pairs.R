@@ -32,5 +32,9 @@ all_pairs_stored <- c("1INCHUSD",  "AAVEUSD",   "ACAUSD",    "ACHUSD",    "ADAUS
                "WBTCUSD" ,  "WIFUSD",    "WOOUSD",    "XBTPYUSD" , "XCNUSD"  ,  "XDGUSD"   , "XETCZUSD" ,
                "XETHZUSD",  "XLTCZUSD",  "XMLNZUSD",  "XREPZUSD" , "XRTUSD" ,   "XTZUSD"   , "XXBTZUSD" ,
                "XXLMZUSD" , "XXMRZUSD",  "XXRPZUSD",  "XZECZUSD" , "YFIUSD",    "YGGUSD"   , "ZEURZUSD" ,
-               "ZGBPZUSD",  "ZRXUSD")
+               "ZGBPZUSD",  "ZRXUSD", "AEVOUSD", "ALTUSD", "ARKMUSD", "AUCTIONUSD", "BEAMUSD", "BIGTIMEUSD",
+               "BODENUSD", "CLOUDUSD",  "CPOOLUSD", "DRIFTUSD", "ENAUSD", "FLOKIUSD", "GFIUSD", "HNTUSD", "HONEYUSD", "KMNOUSD",
+               "KUJIUSD", "L3USD", "LITUSD", "MOGUSD", "MPLUSD", "NOSUSD", "ONDOUSD", "OSMOUSD", "RENDERUSD",
+               "PENDLEUSD", "POPCATUSD", "PRIMEUSD", "REZUSD", "STRDUSD", "STRKUSD", "TAOUSD", "TRACUSD", "TREMPUSD",
+               "SAGAUSD", "TURBOUSD", "WUSD", "ZEUSUSD", "ZEXUSD", "ZROUSD")
   

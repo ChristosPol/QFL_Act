@@ -12,7 +12,10 @@ invisible(sapply(files.sources, source))
 coin_equity_previous <- read.csv(file= "/Users/christospolysopoulos/Repositories/Private/QFL_Act/Data/equity/coin_equity.csv")
 coin_equity_previous$X <- NULL
 coin_equity_previous$date <- as.Date(coin_equity_previous$date)
+
 usd_equity_previous <- read.csv(file= "/Users/christospolysopoulos/Repositories/Private/QFL_Act/Data/equity/usd_equity.csv")
+setDT(usd_equity_previous)
+# usd_equity_previous[, date := as.Date(date, format = "%m/%d/%y")]
 usd_equity_previous$X <- NULL
 usd_equity_previous$date <- as.Date(usd_equity_previous$date)
 usd_balance <- get_balance(url = "https://api.kraken.com/0/private/Balance",
@@ -41,7 +44,7 @@ avail <- merge(avail, all_pairs, by = "coin", all.x = T)
 avail <- avail[!coin%in% avail$coin[grep("*\\.S", avail$coin)]]
 
 
-avail[coin %in% c("CHZ", "USDT", "ZUSD"), PAIR:= c("CHZUSD", "USDTZUSD", "ZUSD")]
+# avail[coin %in% c("CHZ", "USDT", "ZUSD"), PAIR:= c("CHZUSD", "USDTZUSD", "ZUSD")]
 
 avail[coin == "XXDG", PAIR := "XDGUSD"]
 

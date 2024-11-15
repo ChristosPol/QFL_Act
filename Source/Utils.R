@@ -123,7 +123,7 @@ candles <- function(data,date_interval = "2 week"){
   # data[, date := as.Date(date)]
   data[close>open, colour := "green"]
   data[close<open, colour := "red"]
-  data[close==open, colour := "black"]
+  # data[close==open, colour := "black"]
   data[, colour:= as.factor(data$colour)]
   
   p <- ggplot(data = data)+
@@ -137,7 +137,7 @@ candles <- function(data,date_interval = "2 week"){
                      xend=interval,
                      y =high,
                      yend =low,colour= colour))+
-    scale_color_manual(values=c("black","Forest Green","Red"))+
+    scale_color_manual(values=c("Forest Green","Red"))+
     theme_bw()+
     theme(legend.position ="none",
           axis.title.y = element_blank(),
@@ -164,7 +164,7 @@ trades_to_OHLC <- function(pair, interval, from_date, to_date, date_subset) {
   print("File loaded..")
   # Subset the time period
   if(date_subset) {
-    frame <- subset(frame, frame$Date >= from_date & frame$Date < to_date)
+    frame <- subset(frame, frame$Date >= from_date & frame$Date <= to_date)
   }
 
   candles <- list()
@@ -662,5 +662,16 @@ trades_evaluation_withTrail <- function(){
 compound_returns <- function(P, r, n, t){
   A = P*(1 + (r/n) )**(n*t)
   return(A)
+}
+
+# Split data frames
+split_dataframe <- function(df, n_splits) {
+  # Calculate the number of rows in each split
+  split_size <- ceiling(nrow(df) / n_splits)
+  
+  # Use split() and rep() to create a list of splits
+  splits <- split(df, rep(1:n_splits, each = split_size, length.out = nrow(df)))
+  
+  return(splits)
 }
 

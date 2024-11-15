@@ -3,27 +3,34 @@ rm(list = ls())
 path_source <- "Source"
 files.sources = list.files(path_source, full.names = T)
 sapply(files.sources, source)
-
+exit_percentage <- 0.02
 interval <- 60 # Fixed for now
 budget <- current_avail_funds();budget
 n_pairs_avail <- round(budget/40);n_pairs_avail # indicative
 minimum <- T
-use_existing_price_levels <- T
+use_existing_price_levels <- F
 
 each_usd <- 5 # variable 
-n_orders <- 8 # variable
+# n_orders <- 3 # variable
+# grid <- c(0.025,0.05,0.075)# variable
+
+n_orders <- 8# variable
+# grid <- c(0.025, 0.05, 0.1)# variable
 grid <- c(0.025,0.05,0.075,0.1, 0.125, 0.15, 0.2, 0.25)# variable
 
-n_orders <- 3# variable
-grid <- c(0.025, 0.05, 0.1)# variable
+# n_orders <- 1 # variable
+# grid <- c(0.05)# variable
 
-action <- "selection"# variable
+
+action <- "random"# variable
 csv_path <- paste0("Data/trading_table.csv")
 orders <- fread(csv_path)
 open_orders <- orders[STATUS_SELL == "OPEN"]
 
 open_orders <- orders[STATUS_SELL == "OPEN"]
 load("Data/hedge_pairs.RData")
+
+n_pairs_avail <- round(budget/(each_usd*n_orders));n_pairs_avail # indicative
 
 # ------------------------------------------------------------------------------
 # Get all pairs
@@ -32,6 +39,7 @@ tb <- jsonlite::fromJSON(url)
 all_pairs <- names(tb$result)
 all_pairs <- data.table(PAIR = all_pairs, CUR=str_sub(all_pairs,start = -3))
 all_pairs <- all_pairs[CUR%in%c("USD")]
+
 
 if(any(!all_pairs$PAIR %in% all_pairs_stored)){
   new_pair <- all_pairs$PAIR[!all_pairs$PAIR %in% all_pairs_stored]
@@ -76,7 +84,7 @@ if(action =="random"){
   rand <- sample(unique(all_pairs$PAIR), n_pairs_avail)
   print("Random selection of pairs")
 } else if(action =="selection"){
-  rand <- c( "POLUSD")  
+  rand <- c( "FXSUSD", "DYDXUSD", "NYMUSD", "SGBUSD", "ASTRUSD", "ADAUSD", "SOLUSD")  
   print("Manual selection of pairs")
 } else{
   rand <- hedge_pairs[1:11, pair]
@@ -186,7 +194,7 @@ if(use_existing_price_levels){
 }
 
 # For the ones that enter for the first time, just 1%
-trading_table[index == 1 & is.na(PRICE_EXIT), PRICE_EXIT := PRICE_ENTER + PRICE_ENTER*0.01]
+trading_table[index == 1 & is.na(PRICE_EXIT), PRICE_EXIT := PRICE_ENTER + PRICE_ENTER*exit_percentage]
 trading_table$PRICE_EXIT <- na.locf(trading_table$PRICE_EXIT)
 
 trading_table$index <- NULL
