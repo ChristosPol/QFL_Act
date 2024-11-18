@@ -4,7 +4,7 @@ gc()
 path_source <- "Source"
 files.sources = list.files(path_source, full.names = T)
 sapply(files.sources, source)
-pair <- "MANAUSD"
+pair <- "APTUSD"
 # pair <- "SHIBEUR"
 # Path to save results
 data_path <- "Code/Parameter_optim/Data"
@@ -28,7 +28,7 @@ df1[, date:=as.Date(interval)]
 gc()
 # Fix vector of dates
 dates_vector <- unique(as.Date(df1$interval))
-dates_vector <- sample(x = dates_vector, 10, replace = F)
+dates_vector <- sample(x = dates_vector, 30, replace = F)
 
 # dates_vector <- dates_vector[-1]
 
@@ -232,7 +232,7 @@ for (x in 1:length(dataframes)){
   print(x)
 }
 # Save
-save(daily_res, file=paste0("~/Repositories/Private/QFL_Act/Code/Parameter_optim/Grid/results/", paste0(ticks,"_", units,"_", pair, Sys.time()), ".Rdata"))
+save(daily_res, file = paste0(getwd(),"/Code/Parameter_optim/Grid/results/", paste0(ticks,"_", units,"_", pair), ".Rdata"))
 
 # View(rbindlist(daily_res))
 # # test <- rbindlist(daily_res)

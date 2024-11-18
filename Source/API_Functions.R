@@ -202,7 +202,9 @@ hist_trades_pair <- function(sleep, hist_id, pair){
     # [1] "price"         "volume"        "time"          "buy_sell"      "market_limit" 
     # [6] "miscellaneous" "trade_id"      "last_time"     "Date_POSIXct"  "Time"         
     # [11] "Date"          "Hour" 
+    
     hist_id <- dat$result$last
+    
     file <- paste0(paste(pair_data_results, pair, sep = "/"), ".csv.gz")
     fwrite(temp, file, sep = ",", row.names = FALSE,
                 col.names = FALSE,
@@ -212,6 +214,7 @@ hist_trades_pair <- function(sleep, hist_id, pair){
                  head(as.character(temp$Date_POSIXct), 1),
                  "-" ,
                  tail(as.character(temp$Date_POSIXct), 1)))
+    if(tail(temp$Date,1) ==(Sys.Date()-days(1))) break # last batch empty
   }
 }
 
