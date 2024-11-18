@@ -209,6 +209,7 @@ trading_table[, BET_ENTER := as.numeric(VOL)*PRICE_ENTER]
 cumul <- trading_table[, list(SUM_BET = sum(BET_ENTER)), by = PAIR]
 setorder(cumul, SUM_BET)# maybe change this
 cumul[, CUM_BET := cumsum(SUM_BET)]
+# cumul <- cumul[!PAIR %in%c("INTRUSD", "MCUSD")]
 cumul <- cumul[CUM_BET < budget]
 trading_table <- trading_table[PAIR %in% cumul$PAIR]
 

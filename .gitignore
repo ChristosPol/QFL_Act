@@ -50,3 +50,4 @@ vignettes/*.pdf
 /Code/Parameter_optim/Data
 
 *csv
+*.html
